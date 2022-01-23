@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/TestApplication/app/src/main/res-item/layout/module_home_item_comm_layout.xml" value="0.3494791666666667" />
+        <entry key="..\:/TestApplication/app/src/main/res-item/layout/module_relay_home_item_comm_layout.xml" value="0.3494791666666667" />
+        <entry key="..\:/TestApplication/app/src/main/res/layout/fragment_first.xml" value="0.16995947315096252" />
+        <entry key="PeripheralModule/src/main/res-item/layout/module_home_item_comm_layout.xml" value="0.15760869565217392" />
+        <entry key="PeripheralModule/src/main/res-item/layout/module_sample_item_comm_layout.xml" value="0.11881937436932391" />
+        <entry key="PeripheralModule/src/main/res/layout/activity_main.xml" value="0.14322916666666666" />
+        <entry key="PeripheralModule/src/main/res/layout/activity_sample_mvi.xml" value="0.18704710144927536" />
+        <entry key="PeripheralModule/src/main/res/layout/activity_simple_mvi.xml" value="0.1273965691220989" />
+        <entry key="PeripheralModule/src/main/res/layout/content_main.xml" value="0.15806159420289856" />
+        <entry key="PeripheralModule/src/main/res/layout/content_sample_mvi.xml" value="0.18659420289855072" />
+        <entry key="PeripheralModule/src/main/res/layout/content_simple_mvi.xml" value="0.1273965691220989" />
+        <entry key="PeripheralModule/src/main/res/layout/fragment_first.xml" value="0.15806159420289856" />
+        <entry key="PeripheralModule/src/main/res/layout/fragment_first2.xml" value="0.15760869565217392" />
+        <entry key="PeripheralModule/src/main/res/layout/fragment_second.xml" value="0.19067028985507245" />
+        <entry key="PeripheralModule/src/main/res/layout/fragment_second2.xml" value="0.15760869565217392" />
+        <entry key="app/src/main/res/layout/fragment_first.xml" value="0.13546922300706357" />
+        <entry key="app/src/main/res/layout/fragment_second.xml" value="0.1539855072463768" />
+        <entry key="centralmoule/src/main/res/layout/activity_main.xml" value="0.16077898550724637" />
+      </map>
+    </option>
+  </component>
+  <component name="FindBugsConfigurable">
+    <option name="make" value="true" />
+    <option name="effort" value="default" />
+    <option name="priority" value="Medium" />
+    <option name="excludeFilter" value="" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+  <component name="SuppressionsComponent">
+    <option name="suppComments" value="[]" />
+  </component>
+</project>

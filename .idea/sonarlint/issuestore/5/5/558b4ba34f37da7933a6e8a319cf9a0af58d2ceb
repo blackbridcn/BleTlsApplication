@@ -1,0 +1,21 @@
+
+P
+java:S1118!":Add a private constructor to hide the implicit public one.(ÀŠƒ¡
+=
+java:S1481,"'Remove this unused "cf" local variable.(É”­™
+S	java:S106K"9Replace this use of System.out or System.err by a logger.(ÁâÛèúÿÿÿÿ
+N	java:S106N"9Replace this use of System.out or System.err by a logger.(•ÿãÈ
+B
+java:S1905P"'Remove this unnecessary cast to "Date".(Á¹À­øÿÿÿÿ
+S	java:S106R"9Replace this use of System.out or System.err by a logger.(èê½çúÿÿÿÿ
+N	java:S106U"9Replace this use of System.out or System.err by a logger.(¨Î
+N	java:S106X"9Replace this use of System.out or System.err by a logger.(ÊËïÑ
+N	java:S106["9Replace this use of System.out or System.err by a logger.(œŞ±õ
+N	java:S106^"9Replace this use of System.out or System.err by a logger.(ÿıƒ«
+S	java:S106i"9Replace this use of System.out or System.err by a logger.(›×–ıÿÿÿÿ
+N	java:S106o"9Replace this use of System.out or System.err by a logger.(ûâÅß
+N	java:S106r"9Replace this use of System.out or System.err by a logger.(¶×ş…
+J
+java:S1066h"/Merge this if statement with the enclosing one.(ßÙåàşÿÿÿÿ
+O
+java:S3516*"9Refactor this method to not always return the same value.(¯Š£—

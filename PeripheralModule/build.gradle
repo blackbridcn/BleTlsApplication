@@ -1,0 +1,107 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'kotlin-android-extensions'
+}
+
+android {
+    compileSdk 31
+    buildToolsVersion '30.0.3'
+
+    defaultConfig {
+        applicationId "com.hidglobal.duality.testapplication"
+        minSdk 21
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        dataBinding true
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = [
+                        'src/main/java',
+                        'src/bouncycastle/core',
+                        'src/bouncycastle/pkix',
+                        'src/bouncycastle/prov',
+                        'src/bouncycastle/tls',
+                        'src/bouncycastle/tls_jdk1.5',
+                        'src/bouncycastle/util',
+
+                ]
+            }
+
+            res.srcDirs += [
+                    'src/main/res',
+                    'src/main/res-item',]
+        }
+    }
+
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+
+    def lifecycle_version = "2.4.0"
+    def arch_version = "2.1.0"
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    // ViewModel utilities for Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    // LiveData
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+    // Lifecycles only (without ViewModel or LiveData)
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
+
+    // Saved state module for ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version")
+
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+
+    //implementation project(path: ':bouncycastle')
+
+
+    def coroutines_version = "1.4.2"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    //kotlin协程依赖库
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    //协程Android库，提供AndroidUI调度器
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1"
+
+
+    implementation files ('/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/jre/lib/rt.jar')
+
+    //bouncycastle
+    //api "org.bouncycastle:bctls-jdk15on:1.70"
+
+}

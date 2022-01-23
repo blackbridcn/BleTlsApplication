@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="device"
+            type="org.ble.scan.ScanResult" />
+
+        <variable
+            name="listener"
+            type="com.hidglobal.duality.testapplication.ui.AdapterListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/base_dimen80"
+        android:background="@android:color/white">
+
+        <TextView
+            android:id="@+id/tv_device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/base_dimen15"
+            android:layout_marginTop="@dimen/base_dimen15"
+            android:maxLines="@integer/base_int_1"
+            android:text="@{device.device.name}"
+            android:textColor="@color/base_text_black"
+            android:textSize="@dimen/base_dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_device_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_dimen3"
+            android:ellipsize="end"
+            android:maxEms="@integer/base_int_10"
+            android:maxLines="@integer/base_int_1"
+            android:text="@{@string/module_rssi_text(device.rssi)}"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_device_name"
+            app:layout_constraintTop_toBottomOf="@+id/tv_device_name"
+            tools:ignore="MissingConstraints" />
+
+        <Button
+            android:id="@+id/tv_open_door"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:onClick="@{(view)->listener.onUnlockTask(view,device)}"
+            android:paddingLeft="@dimen/base_dimen20"
+            android:paddingTop="@dimen/base_dimen10"
+            android:paddingRight="@dimen/base_dimen20"
+            android:paddingBottom="@dimen/base_dimen10"
+            android:textAllCaps="false"
+            android:text="@string/app_name"
+            android:textSize="@dimen/base_dimen_16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.468"
+            tools:ignore="MissingConstraints" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

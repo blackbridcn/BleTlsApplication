@@ -1,0 +1,15 @@
+
+x
+java:S3008"bRename this field "DEFAULT_PLAINTEXT_LIMIT" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ßæ÷—
+>
+java:S1659"(Declare "writeSeqNo" on a separate line.(úÁñ»
+N
+java:S1135¬"2Complete the task associated to this TODO comment.(û•¤¹ÿÿÿÿÿ
+n
+java:S3776¾"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(›ÏûÜüÿÿÿÿ
+=
+java:S3077ñ"&Use an "AtomicReferenceArray" instead.(¿‘Îå
+]
+java:S3078û"AUse an "AtomicInteger" for this field; its operations are atomic.(Ýå¦³ýÿÿÿÿ
+X
+java:S3078‡"AUse an "AtomicInteger" for this field; its operations are atomic.(¦“ù¸

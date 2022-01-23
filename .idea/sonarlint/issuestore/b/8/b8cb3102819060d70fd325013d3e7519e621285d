@@ -1,0 +1,30 @@
+
+E
+java:S3740U"/Provide the parametrized type for this generic.(º¹ÕÔ
+J
+java:S3740h"/Provide the parametrized type for this generic.(šÌúŠùÿÿÿÿ
+K
+java:S3740§"/Provide the parametrized type for this generic.(Åš®æùÿÿÿÿ
+{
+java:S1149U"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(º¹ÕÔ
+€
+java:S1149h"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(šÌúŠùÿÿÿÿ
+r
+java:S1149§"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(Åš®æùÿÿÿÿ
+P
+java:S11189":Add a private constructor to hide the implicit public one.(ëĞü
+7	java:S131Y""Add a default case to this switch.(äö¡ı
+I
+java:S1135“"2Complete the task associated to this TODO comment.(˜´û·
+I
+java:S1135¦"2Complete the task associated to this TODO comment.(ø Éá
+N
+java:S1135ª"2Complete the task associated to this TODO comment.(ß°¿ÿÿÿÿÿ
+X
+java:S1874È"5Remove this use of "getParameters"; it is deprecated.(ïá«şÿÿÿÿ8«ÿ–İ/
+K
+java:S1172ç"/Remove this unused method parameter "resource".(×ü·Ñûÿÿÿÿ
+I
+java:S1135ú"2Complete the task associated to this TODO comment.(ê‹¹
+R
+java:S1172Œ"/Remove this unused method parameter "resource".(ò¼¡ÿÿÿÿÿ8á”–’Ü/

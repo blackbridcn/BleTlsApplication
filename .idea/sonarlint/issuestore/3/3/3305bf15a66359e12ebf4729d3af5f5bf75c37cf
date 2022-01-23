@@ -1,0 +1,175 @@
+
+K
+java:S3740¡"/Provide the parametrized type for this generic.(¸¬ï”ÿÿÿÿÿ
+K
+java:S3740¢"/Provide the parametrized type for this generic.(¶ºªêûÿÿÿÿ
+K
+java:S3740î"/Provide the parametrized type for this generic.(°¡ˆ¼øÿÿÿÿ
+K
+java:S3740Ÿ"/Provide the parametrized type for this generic.(×§¹¤ıÿÿÿÿ
+K
+java:S3740Ÿ"/Provide the parametrized type for this generic.(×§¹¤ıÿÿÿÿ
+K
+java:S3740æ"/Provide the parametrized type for this generic.(Åä—Äúÿÿÿÿ
+F
+java:S3740ó"/Provide the parametrized type for this generic.(ëÊúÕ
+K
+java:S3740ö"/Provide the parametrized type for this generic.(º×—’üÿÿÿÿ
+K
+java:S3740ö"/Provide the parametrized type for this generic.(º×—’üÿÿÿÿ
+K
+java:S3740"/Provide the parametrized type for this generic.(Ãò˜ñÿÿÿÿÿ
+K
+java:S3740"/Provide the parametrized type for this generic.(º×—’üÿÿÿÿ
+K
+java:S3740"/Provide the parametrized type for this generic.(º×—’üÿÿÿÿ
+F
+java:S3740­"/Provide the parametrized type for this generic.(š“Å­
+K
+java:S3740·"/Provide the parametrized type for this generic.(º×—’üÿÿÿÿ
+K
+java:S3740·"/Provide the parametrized type for this generic.(º×—’üÿÿÿÿ
+K
+java:S3740Ø"/Provide the parametrized type for this generic.(Š ƒ°şÿÿÿÿ
+F
+java:S3740à"/Provide the parametrized type for this generic.(±ŠİÅ
+F
+java:S3740à"/Provide the parametrized type for this generic.(±ŠİÅ
+K
+java:S3740ì"/Provide the parametrized type for this generic.(ò‘îşÿÿÿÿ
+K
+java:S3740ğ"/Provide the parametrized type for this generic.(¼ûé•ûÿÿÿÿ
+K
+java:S3740ı"/Provide the parametrized type for this generic.(ÑŸ¼ñùÿÿÿÿ
+F
+java:S3740"/Provide the parametrized type for this generic.(¡¨õ„
+K
+java:S3740‡"/Provide the parametrized type for this generic.(ÉÛÚ³ıÿÿÿÿ
+K
+java:S3740’"/Provide the parametrized type for this generic.(®…Ì´ùÿÿÿÿ
+K
+java:S3740 "/Provide the parametrized type for this generic.(Î½‡Ïúÿÿÿÿ
+K
+java:S3740¢"/Provide the parametrized type for this generic.(—à§ÿÿÿÿÿ
+K
+java:S3740¶"/Provide the parametrized type for this generic.(²”ùÿÿÿÿ
+r
+java:S1149¡"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(¸¬ï”ÿÿÿÿÿ
+r
+java:S1149¢"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(¶ºªêûÿÿÿÿ
+
+java:S1149î"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(°¡ˆ¼øÿÿÿÿ
+r
+java:S1149Ÿ"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(×§¹¤ıÿÿÿÿ
+r
+java:S1149Ÿ"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(×§¹¤ıÿÿÿÿ
+r
+java:S1149æ"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(Åä—Äúÿÿÿÿ
+m
+java:S1149ó"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(ëÊúÕ
+r
+java:S1149ö"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(º×—’üÿÿÿÿ
+r
+java:S1149"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(Ãò˜ñÿÿÿÿÿ
+r
+java:S1149"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(º×—’üÿÿÿÿ
+m
+java:S1149­"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(š“Å­
+r
+java:S1149·"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(º×—’üÿÿÿÿ
+
+java:S1149Ø"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(Š ƒ°şÿÿÿÿ
+|
+java:S1149à"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(±ŠİÅ
+r
+java:S1149ì"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(ò‘îşÿÿÿÿ
+r
+java:S1149ğ"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(¼ûé•ûÿÿÿÿ
+r
+java:S1149ı"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(ÑŸ¼ñùÿÿÿÿ
+m
+java:S1149"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(¡¨õ„
+r
+java:S1149‡"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(ÉÛÚ³ıÿÿÿÿ
+r
+java:S1149’"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(®…Ì´ùÿÿÿÿ
+r
+java:S1149 "VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(Î½‡Ïúÿÿÿÿ
+
+java:S1149¶"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(²”ùÿÿÿÿ
+=	java:S131ğ""Add a default case to this switch.(¸äÇĞşÿÿÿÿ
+I
+java:S1135€"2Complete the task associated to this TODO comment.(èıêş
+N
+java:S1135±"2Complete the task associated to this TODO comment.(¸ „ºûÿÿÿÿ
+I
+java:S1135¹"2Complete the task associated to this TODO comment.(†äœé
+I
+java:S1135Ø"2Complete the task associated to this TODO comment.(×Çšÿ
+F
+java:S2093¬"*Change this "try" to a try-with-resources.(¡»¢üùÿÿÿÿ
+I
+java:S1135–"2Complete the task associated to this TODO comment.(À º
+n
+java:S3776 "RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(îªõıÿÿÿÿ
+f
+java:S2674ö"JCheck the return value of the "skip" call to see how many bytes were read.(€İÁÌøÿÿÿÿ
+i
+java:S3776Ä"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(ì»ò
+i
+java:S3776ˆ"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(Ò¡áı
+i
+java:S3776Õ"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(«øÌ‡
+b
+java:S1117å	"FRename "sessionParameters" which hides the field declared at line 156.(÷ø¼©ÿÿÿÿÿ
+d
+java:S1117÷	"HRename "sessionMasterSecret" which hides the field declared at line 157.(Œåˆ’ùÿÿÿÿ
+I
+java:S1135å
+"2Complete the task associated to this TODO comment.(¦­í—
+I
+java:S1135Û"2Complete the task associated to this TODO comment.(¦­í—
+;
+java:S1168é"$Return an empty map instead of null.(¥¹ï
+N
+java:S1135°"2Complete the task associated to this TODO comment.(Æ¾ò‰ùÿÿÿÿ
+t	java:S135ê"YReduce the total number of break and continue statements in this loop to use at most one.(Å–Õüÿÿÿÿ
+F
+java:S1066ß"/Merge this if statement with the enclosing one.(ËÌ¨‹
+K
+java:S1066®
+"/Merge this if statement with the enclosing one.(ìÑÀşùÿÿÿÿ
+K
+java:S1066Ä"/Merge this if statement with the enclosing one.(†Ûˆ½úÿÿÿÿ
+K
+java:S1066¤"/Merge this if statement with the enclosing one.(¾½õ¯üÿÿÿÿ
+g	java:S117‰"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ûŞÒä
+l	java:S117›
+"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‘Ûô¼ÿÿÿÿÿ
+g	java:S117Ÿ
+"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¤Öıÿ
+l	java:S117º
+"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‘Ûô¼ÿÿÿÿÿ
+g	java:S117¾
+"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¤Öıÿ
+g	java:S117¿"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(§¸ùÍ
+g	java:S117Ò"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(§¸ùÍ
+g	java:S117Ï"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ï±ÈÀ
+g	java:S117ü"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(„ïçå
+g	java:S117ı"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ñø§ı
+g	java:S117–"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(„ïçå
+g	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ñø§ı
+l	java:S117¼"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(øè†éúÿÿÿÿ
+g	java:S117½"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ü‹ş¬
+g	java:S117Á"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ñø§ı
+l	java:S117Ú"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ŸÂ·Ìüÿÿÿÿ
+g	java:S117ã"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¼Ğ£Î
+l	java:S117”"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(›Î¯öûÿÿÿÿ
+f	java:S117¥"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(›ƒ›
+l	java:S117¬"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(˜Ú€·úÿÿÿÿ
+l	java:S117½"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(áÄ†úşÿÿÿÿ
+g	java:S117Ã"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(§Æºü
+b
+java:S1301¿"KReplace this "switch" statement by "if" statements to increase readability.(ÜŸ•
+I
+java:S1199Â"-Extract this nested code block into a method.(ÒÌâ–øÿÿÿÿ

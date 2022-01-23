@@ -1,0 +1,19 @@
+
+—
+java:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ÐÞ¾Ä
+I
+java:S1172"3Remove this unused method parameter "packageValue".(ÐÞ¾Ä
+>	java:S108"")Either remove or fill this block of code.(ëã¦à
+T
+java:S1068">Remove this unused "PROTOCOL_TYPE_CLIENT_HELLO" private field.(“àíª
+P
+java:S1068"5Remove this unused "contentTypeString" private field.(€åâ–þÿÿÿÿ
+—
+java:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ÐÞ¾Ä
+I
+java:S1172"3Remove this unused method parameter "packageValue".(ÐÞ¾Ä
+>	java:S108"")Either remove or fill this block of code.(ëã¦à
+T
+java:S1068">Remove this unused "PROTOCOL_TYPE_CLIENT_HELLO" private field.(“àíª
+P
+java:S1068"5Remove this unused "contentTypeString" private field.(€åâ–þÿÿÿÿ

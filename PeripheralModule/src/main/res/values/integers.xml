@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="base_int_1">1</integer>
+    <integer name="base_int_2">2</integer>
+    <integer name="base_int_3">3</integer>
+    <integer name="base_int_6">6</integer>
+    <integer name="base_int_10">10</integer>
+    <integer name="base_int_11">11</integer>
+    <integer name="base_int_12">12</integer>
+    <integer name="base_int_13">13</integer>
+    <integer name="base_int_15">15</integer>
+    <integer name="base_int_16">16</integer>
+    <integer name="base_int_20">20</integer>
+    <integer name="base_int_25">25</integer>
+    <integer name="base_int_30">30</integer>
+
+
+</resources>

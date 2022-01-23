@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#2c365d</color>
+    <color name="colorPrimaryDark">#2c365d</color>
+    <color name="colorAccent">#2c365d</color>
+    <color name="colorBackground">#FFFFFF</color>
+
+    <color name="base_theme_color">#2c365d</color>
+
+    <color name="base_theme_dark_color">#FF0A1B5C</color>
+
+    <!--透明色-->
+    <color name="base_transport">#00ffffff</color>
+
+    <color name="base_white">#FFFFFF</color>
+    <color name="base_red">#FFFF0000</color>
+    <color name="base_green">#FF00FF00</color>
+    <color name="base_blue">#07078C</color>
+    <color name="base_orange">#FF8000</color>
+    <color name="base_purple">#FF800080</color>
+
+    <color name="base_grey">#BEBEBE</color>
+    <color name="base_grey_light">#D3D3D3</color>
+    <color name="base_grey_bg">#F0F0F0</color>
+    <color name="base_grey_press_bg">#F0F0F0</color>
+    <color name="base_grey_text_bg">#FDF5F3F3</color>
+    <color name="base_grey_ripple">#F8F8F8</color>
+
+    <color name="base_text_black">#333333</color>
+    <color name="base_text_grey">#84898C</color>
+
+    <color name="base_blue_selected">#FF07078C</color>
+
+    <color name="base_black">#FF000000</color>
+    <color name="base_black_90">#E6000000</color>
+    <color name="base_black_80">#CC000000</color>
+    <color name="base_black_75">#BF000000</color>
+    <color name="base_black_70">#B3000000</color>
+    <color name="base_black_60">#99000000</color>
+    <color name="base_black_50">#80000000</color>
+    <color name="base_black_40">#66000000</color>
+    <color name="base_black_30">#4D000000</color>
+    <color name="base_black_25">#40000000</color>
+    <color name="base_black_20">#33000000</color>
+    <color name="base_black_10">#1A000000</color>
+</resources>
