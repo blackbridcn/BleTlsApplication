@@ -1959,13 +1959,16 @@ public class TlsUtils {
         SecurityParameters sp = context.getSecurityParametersHandshake();
         // NOTE: The implicit copy here is intended (and important)
         byte[] randoms = Arrays.concatenate(sp.getClientRandom(), sp.getServerRandom());
+
         h.update(randoms, 0, randoms.length);
 
         if (null != extraSignatureInput) {
             h.update(extraSignatureInput, 0, extraSignatureInput.length);
         }
 
+        //等效于 h.update(buf)
         buf.updateDigest(h);
+
 
         return h.calculateHash();
     }
@@ -4315,7 +4318,9 @@ public class TlsUtils {
     static void processServerCertificate(TlsClientContext clientContext,
                                          CertificateStatus serverCertificateStatus, TlsKeyExchange keyExchange, TlsAuthentication clientAuthentication,
                                          Hashtable clientExtensions, Hashtable serverExtensions) throws IOException {
+
         SecurityParameters securityParameters = clientContext.getSecurityParametersHandshake();
+
         boolean isTLSv13 = isTLSv13(securityParameters.getNegotiatedVersion());
 
         if (null == clientAuthentication) {
@@ -4339,7 +4344,7 @@ public class TlsUtils {
         if (!isTLSv13) {
             keyExchange.processServerCertificate(serverCertificate);
         }
-
+        //回调客户端 ，收到的服务端是Ca，并且由开发者自己实现对服务端证书的校验
         clientAuthentication.notifyServerCertificate(new TlsServerCertificateImpl(serverCertificate, serverCertificateStatus));
     }
 

@@ -12,14 +12,12 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.os.Build;
-import android.se.omapi.SEService;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.ble.callback.BleGattCallback;
-
 import org.ble.config.BleConfig;
 import org.ble.exception.BleErrorCode;
 import org.ble.exception.EnumErrorCode;
@@ -84,7 +82,7 @@ public class CentralImpl implements CentralCore {
                                           @NonNull BluetoothGattCharacteristic characteristic,
                                           @Nullable byte[] msg) {
 
-        LogUtils.e(TAG, "-----------------> :" + HexStrUtils.Companion.byteArrayToHexString(msg));
+        LogUtils.e(TAG, "----------------->sendMsgToGattServerDevice :" + HexStrUtils.Companion.byteArrayToHexString(msg));
 
         count = 0;
         index = 0;
@@ -193,8 +191,8 @@ public class CentralImpl implements CentralCore {
                     }
                     onDisAndClear(gatt, characteristic);
                 }
-                boolean mtu = requestMtu(gatt);
-                LogUtils.e(TAG, "--------------------> onConnectionStateChange mtu :" + mtu);
+               // boolean mtu = requestMtu(gatt);
+               // LogUtils.e(TAG, "--------------------> onConnectionStateChange mtu :" + mtu);
                 /*}*/
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
                 if (bleGattCallback != null) {

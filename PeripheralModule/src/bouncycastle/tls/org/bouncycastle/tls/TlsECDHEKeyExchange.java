@@ -73,9 +73,10 @@ public class TlsECDHEKeyExchange
     }
 
     public void processServerKeyExchange(InputStream input) throws IOException {
+
         DigestInputBuffer digestBuffer = new DigestInputBuffer();
         InputStream teeIn = new TeeInputStream(input, digestBuffer);
-
+        //读取ServerKeyExchange 消息中ECC算法参数
         this.ecConfig = TlsECCUtils.receiveECDHConfig(context, teeIn);
 
         LogUtils.e("TAG", "ECC NamedGroup" + this.ecConfig.getNamedGroup());
@@ -84,7 +85,7 @@ public class TlsECDHEKeyExchange
         // point 就是公钥
         byte[] point = TlsUtils.readOpaque8(teeIn, 1);
 
-
+        //对
         TlsUtils.verifyServerKeyExchangeSignature(context, input, serverCertificate, null, digestBuffer);
 
         this.agreement = context.getCrypto().createECDomain(ecConfig).createECDH();

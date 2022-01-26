@@ -37,7 +37,9 @@ public class KeyExchangeAlgorithm
      * RFC 4429
      */
     public static final int ECDH_ECDSA = 16;
+
     public static final int ECDHE_ECDSA = 17;
+
     public static final int ECDH_RSA = 18;
     public static final int ECDHE_RSA = 19;
     public static final int ECDH_anon = 20;

@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.hidglobal.duality.testapplication.R
 import com.hidglobal.duality.testapplication.databinding.FragmentFirstBinding
+import com.hidglobal.duality.testapplication.message.BleDataUtils
 import com.hidglobal.duality.testapplication.mvi.SampleMviActivity
 import org.ble.BleClient
 import org.ble.callback.BleGattCallback
@@ -27,7 +28,7 @@ import org.recyclerview.IndexOutOfBoundsExcLinearLayoutManager
 import org.tls12.TlsServerUtils
 
 import org.utils.LogUtils
-import java.util.ArrayList
+import java.util.*
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -75,15 +76,15 @@ class FirstFragment : Fragment(), AdapterListener {
 
     override fun onResume() {
         super.onResume()
-        //startScanTask()
+        startScanTask()
     }
 
     override fun onPause() {
         super.onPause()
-        //stopScanTask()
+        stopScanTask()
     }
 
-    var tlsClientDeviceName = "tls-dc"
+    var tlsClientDeviceName = "duality"
 
     private fun startScanTask() {
         var scanner: BluetoothScannerProvider = BluetoothScannerProvider.getScanner()
@@ -100,6 +101,7 @@ class FirstFragment : Fragment(), AdapterListener {
             .setUseHardwareBatchingIfSupported(false)
             .build()
 
+        LogUtils.e(TAG,"------------>  startScanTask :"+scanner.javaClass.simpleName)
         scanner.startScan(filters, settings, scanCallback)
     }
 
@@ -186,8 +188,11 @@ class FirstFragment : Fragment(), AdapterListener {
                 "--------------------> onBleServerResp :" + HexStrUtils.byteArrayToHexString(value)
             )
          //   receiveBuildPackage(gatt, characteristic, value)
-
-
+            BleClient.getInstance().sendMsgToGattServerDevice(
+                gatt, characteristic,
+                BleDataUtils.buildUnlockMsg(Date())
+            )
+            ;
         }
     }
 
