@@ -1,0 +1,48 @@
+
+
+0.org.bouncycastle.jce.provider.BouncyCastleProvider
+
+PROVIDER_NAME 修改BC 为 EC 解决Android系统已经基础BC库导致冲突；
+
+
+1.org.bouncycastle.tls.TlsClientProtocol
+
+sendClientHello函数中修改 构建ClientHello中的tls版本；
+
+
+基础知识点
+
+RFC 5246 TLS 1.2协议主体协议 ，2008年发布。
+RFC 8446 TLS 1.3协议主体协议 ，2018年发布。
+
+RFC 5077 Tls Session协议，Session 在Tls1.2中继续保留，但是在Tls1.3(rfc8446)中已经取消，
+         client not offering a pre-TLS 1.3 session MUST generate a new 32-byte value
+
+
+signature_algorithms ：tls1.2以下（包括1.2）扩展字段中必须传参数
+
+
+
+TLS 1.3 中Pre_shared_key和key_share对应的两种密钥交换模式
+1、TLS1.3的整个协议的文档规范 请参照 RFC 8846，协议规范中指出，TLS1.3提供三方面的安全属性，分别是身份认证、通信加密、完整性验证。
+
+2、TLS1.3协议主要包括两个组成部分，分别是握手协议、记录协议、其中记录协议包括了警告协议。而握手协议的主要作用是实现双方身份认证，协商加密模式，建立共享密钥参数，产生一个主秘钥用于后续记录协议使用加密应用层通信消息。
+
+3、TLS1.3提供密钥交换模式一共有三种分别是：
+
+       （EC)DHE （DDiffer-Hellman overr either finite fields or elliptic curves）（论文中讨论有限域上椭圆曲线秘钥交换模式）
+
+         PSK -Only
+
+         PSK with (EC)DHE (暂时还没有实现)
+
+4、Pre_shared_key和key_share的内容区别
+
+              key_share 是Client发送ClientHello中Extension中包含的一个对应Support_group中椭圆曲线的对应计算的公钥集（ECDHE）
+
+              Pre_shared_key是PSK模式中
+
+            （TLS1.3中删除了之前版本在中使用的会话票据，而是使用PSK模式建立会话恢复）
+
+   其中加密协商的进程主要四个可选的扩展影响（Cipher_suite 表明AEAD算法、 HKDF算法 哈希对），（Support_group  包含ECDHE组）（Signature_algorithms签名算法）（Pre_shared_key 包含对称密钥标签）
+

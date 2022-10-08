@@ -1,0 +1,51 @@
+
+
+IETF
+互联网工程任务组
+https://www.ietf.org/
+
+
+TLS 1.0 RFC
+http://www.ietf.org/rfc/rfc2246.txt
+
+TLS 1.1 RFC
+http://www.ietf.org/rfc/rfc4346.txt
+
+TLS 1.2 RFC 协议
+http://www.ietf.org/rfc/rfc5246.txt
+https://datatracker.ietf.org/doc/html/rfc5246
+
+ECC Cipher Suites for TLS
+https://datatracker.ietf.org/doc/html/rfc4492#section-5.10
+
+
+RFC 5746
+ Standards Track
+ Transport Layer Security (TLS) Renegotiation Indication Extension
+https://www.rfc-editor.org/rfc/rfc5746
+
+The Transport Layer Security (TLS) Protocol Version 1.3
+https://datatracker.ietf.org/doc/html/rfc8446
+
+https://halfrost.com/https-key-cipher/
+
+
+TLS1.2协议设计原理
+主要将协议格式
+https://www.cnblogs.com/Jack-Blog/p/13170728.html#
+
+
+HTTPS协议、TLS协议、证书认证过程解析
+主要时证书认证
+https://www.cnblogs.com/snowater/p/7804889.html
+
+
+https://mp.weixin.qq.com/s?__biz=MzUzODQxMzYxNQ==&mid=2247486876&idx=2&sn=f35f6d9b996f43505fb0d7a97353d01a&chksm=fad952dccdaedbca4dd4552c86a8136d9830c86230677278d96841710c79c71e93da9a55b1cf&mpshare=1&scene=1&srcid=1207gVPyO9rQBsomOK5R124C&sharer_sharetime=1638841163719&sharer_shareid=e00061625efb91fedb6d2428da7aee0c&exportkey=A2NpKn58yR0mz4JZRFVcVWk%3D&pass_ticket=x2TUGIQUf9hAS1wka6S5pkPfpsvtOBYsCHBfX1o6RVgx7Cou5s564eN3Il5%2B6avB&wx_header=0#rd
+
+https://mp.weixin.qq.com/s?__biz=MzUzODQxMzYxNQ==&mid=2247486573&idx=1&sn=394d88349c80aeb405cf92bd257cccc0&chksm=fad9532dcdaeda3b91fbdddfd9acbc014b50694d98c47575b938405adcd4b11ab8837bf435c8&mpshare=1&scene=1&srcid=11060LuClRXhAXYgO5VB9Esq&sharer_sharetime=1636161616798&sharer_shareid=e00061625efb91fedb6d2428da7aee0c&exportkey=A%2FDQHtv8F3VEbjaDwUzqePw%3D&pass_ticket=x2TUGIQUf9hAS1wka6S5pkPfpsvtOBYsCHBfX1o6RVgx7Cou5s564eN3Il5%2B6avB&wx_header=0#rd
+
+https://mp.weixin.qq.com/s?__biz=MzAxMTI4MTkwNQ==&mid=2650840922&idx=1&sn=1d9753dee827f5d2e674b0d37a30b0c6&chksm=80b74bc4b7c0c2d2784bc1d85075f912eac6fce66b6d766fb3d32a33bd76cb0b83d9d70eede0&mpshare=1&scene=1&srcid=1211CirUVIGBQuvoMNIaF9sq&sharer_sharetime=1639189258980&sharer_shareid=e00061625efb91fedb6d2428da7aee0c&exportkey=Ax0J0hC55sh0mqnZj3GC6y4%3D&pass_ticket=i4Nd7NQ9L%2B2IbEQLSojQ15tnsYX%2FKxkxCCxoxiKYMA6ny0OdLqF64t9n2tIyuMvF&wx_header=0#rd
+
+https://mp.weixin.qq.com/s?__biz=MzAxMTI4MTkwNQ==&mid=2650840920&idx=2&sn=447afbe4c909f28ebb8a38d6c3aa86dc&chksm=80b74bc6b7c0c2d0d9fbdba498cd69016149eeb7be398a67cd25faae968dcaed1e24f50aef48&mpshare=1&scene=1&srcid=12116uKfsYQ89QqeoEC6eggR&sharer_sharetime=1639189396766&sharer_shareid=e00061625efb91fedb6d2428da7aee0c&exportkey=A543uxpGspIjwOCVdeaqy1M%3D&pass_ticket=i4Nd7NQ9L%2B2IbEQLSojQ15tnsYX%2FKxkxCCxoxiKYMA6ny0OdLqF64t9n2tIyuMvF&wx_header=0#rd
+
+https://github.com/iDevicesInc/SweetBlue/wiki/Android-BLE-Issues

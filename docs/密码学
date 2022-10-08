@@ -1,0 +1,121 @@
+
+PRNG
+PRNG(pseudorandom number generator)
+伪随机数生成器是指通过特定算法生成一系列的数字，使得这一系列的数字看起来是随机的，但是实际是确定的，所以叫伪随机数
+
+与伪随机数对应的是真随机数。真随机数可来源于热噪声。
+
+并不是所有的PRNG都是密码学安全的。在密码学中PRNG常用于构建session keys和stream ciphers。
+
+伪随机数生成器应可抵抗统计测试statistical test以及The Next-Bit Test（即已知前i个数字，无法推论第i+1个数字。）。
+
+PRF
+伪随机数函数（Pseudorandom function）
+总体回归函数（Population regression function）
+
+
+
+这里说的信息安全是相对于系统安全而言的,它更侧重于加密,解密,数字签名,验证,证书等等.而系统安全主要侧重于系统本身是否有安全漏洞,如常见的由于软件设计的不完善而导致的满天飞的缓冲区溢出等等.
+
+JCA:Java加密体系结构 Java Cryptography Architecture (JCA)
+
+Java Cryptography Architecture(JCA) Reference Guide
+https://docs.oracle.com/javase/7/docs/technotes/guides/security/crypto/CryptoSpec.html
+
+JCE:Java语言中负责加密功能的部件是JCE(Java Crypto Extenstion)
+  Java语言中负责加密功能的部件是JCE(Java Crypto Extenstion),它使用开放式的思想,可以允许用户自己编写加密算法的具体实现的模块等.这些东西被称为JCE Provider,JCE的提供者.SUN公司本身提供了一些Provider
+
+BC :是指Bouncy Castle(开源的Java加解密算法http://www.bouncycastle.org/)，基于上文JCE中提到的Java在加解密模块中JCE Provider采用interface的方式支持开发者自定义扩展和第三方加解密函数实现。
+
+
+消息摘要[指纹](Digest)
+   对一份数据，进行一个单向的 Hash 函数，生成一个固定长度的 Hash 值，这个值就是这份数据的摘要，也称为指纹。
+   常见的摘要算法有 MD5、SHA-1、SHA-256
+
+    1.对于同一个摘要算法，无论输入的数据是什么，输出都是相同长度的值。例如 MD5，无论数据有多大，输出总是128位的散列值。
+    2.摘要算法是单向的，只能根据原始数据计算出它的摘要值，但是不能根据摘要值反算出原始数据。
+    3.越优秀的摘要算法越难找到Hash碰撞。虽然长内容生成短摘要是必定会产生碰撞的，但一个优秀的摘要算法很难主动构造出两条数据，使得他们的摘要值相同。
+    4.相比加密算法，摘要算法速度都相对较快。
+    5.消息摘要的用途：可以用于校验数据的完整性。
+
+
+数字签名(Signature)（又称公钥数字签名）
+是只有信息的发送者才能产生的别人无法伪造的一段数字串，这段数字串同时也是对信息的发送者发送信息真实性的一个有效证明。具有不可伪造、不可抵赖特点
+私钥签名 ---- 公钥解密
+
+    根据公开密钥密码体系，我们有了非对称加密。常见的非对称加密是 RSA 加密。
+
+    如果用「公钥」对数据加密，用「私钥」去解密，这是「加密」；
+    反之用「私钥」对数据加密，用「公钥」去解密，这是「签名」。
+
+    由于所有人都持有公钥，所以「签名」并不能保证数据的安全性，因为所有人都可以用公钥去解密
+    但「签名」却能用于保证消息的准确性和不可否认性。因为公钥和私钥是一一对应的，所以当一个公钥能解密某个密文时，说明这个密文一定来自于私钥持有者。
+
+非对称加密算法
+    非对称加密需要两个密钥：公钥 (publickey) 和私钥 (privatekey)。公钥和私钥是一对，如果用公钥对数据加密，那么只能用对应的私钥解密
+
+    非对称加密算法的保密性好，它消除了最终用户交换密钥的需要。但是加解密速度要远远慢于对称加密
+
+    主要算法：RSA、Elgamal、背包算法、Rabin、D-H、ECC (椭圆曲线加密算法)。使用最广泛的是 RSA 算法，Elgamal 是另一种常用的非对称加密算法。
+
+对称加密算法
+AES  DES
+
+非对称加密算法 RSA
+
+RSA是一种公钥密码算法，它的名字是由它的三位开发者，即Ron Rivest、Adi Shamir 和 Leonard Adleman 的姓氏的首字母组成的。
+RSA可以被用于公钥密码和数字签名。RSA是被研究得最广泛的公钥算法，从提出到现在已近三十年，经历了各种攻击的考验，逐渐为人们接受，普遍认为是目前最优秀的公钥方案之一
+
+
+
+
+TLS/SSL 协议详解 加密套件的选择
+
+当一个SSL请求发送到服务器，由于SSL的client hello中有自己支持的所有加密套件，服务器需要选择。
+
+服务器在选择算法时，会有优先级，是以客户端提供的的为最优，还是服务器端配置的为最优。
+
+所谓客户端最优，就是服务端根据客户端提供的加密套件，从上到下，看是否有本地（服务端）支持的，有的话则使用。
+
+所谓服务器端最优，就是服务器端根据自身配置的加密套件顺序，一个个在client hello中找，找到了就使用。
+
+其次
+
+当服务器配置ECC证书时，加密套件只能选择XXX_ECDSA_XXX或者ECDH_XXX。
+当服务器配置RSA证书时，只能选择RSAXXX或者ECDHERSA_XXX形式的加密套件。
+
+需要注意的是，如果加密套件选择ECDH_RSA或者ECDH_ECDSA时，由于ECDH加密套件默认表明了握手需要ECC证书（即ECC证书的公钥充当握手中server key exchange中的公钥，证书的私钥同样也是握手过程中的私钥，握手过程不需要server key exchange），所有第二部分_RSA和_ECDSA表明的是想要的服务器证书签名类型。（这里在谈ECDH而不是ECDHE，评论区有同学混淆了两者概念，区别见：https://blog.csdn.net/mrpre/article/details/78025940）
+
+比如说服务器选择了ECDH_RSA加密套件，但是发送的证书却是ECDSA签名的证书，虽然说证书签名类型不影响整个握手，但是对于校验严格的客户端，这种情况可能会导致客户端断开链接。
+
+详见 RFC：https://tools.ietf.org/html/rfc4492#section-2.3
+
+加密算法套件 CipherSuite 由各类基础的加密算法组成，主要包含了四类：
+1.Authentication 认证算法；
+2.Encryption 对称加密算法；
+3.Message Authentication Code 消息认证码算法简称MAC；
+4.Key Exchange 密钥交换算法。
+
+Authentication (认证)算法 ：常见的有 RSA/DSA/ECDSA 3种目前最主流的是人民群众喜闻乐见，妇孺皆知的RSA ( 2048 bit及以上)， （ECDSA 是新兴趋势，例如gmail，facebook都在迁移到ECDSA，当然目前用的还不多，DSA 由于只能提供1024bit，已经没啥人敢用）
+Encryption对称加密算法：主流趋势是使用 aes，128/256 bit都可以，加密模式的趋势是使用gcm，cbc由于被发现有 BEAST 攻击等，比较难以正确使用，至于ecb模式，请勿使用。加密算法 还有RC4（不建议使用），3DES（不建议使用），Camellia(貌似日本人搞的) ，DES(已经被淘汰)等，
+Message Authentication Code (消息认证码 简称MAC)算法 ，主流有 sha256,sha384,sha1,等。tls中使用了HMAC模式，而不是原始的 sha256,sha1等。google已经在淘汰MD5了。（gcm是一种特殊的称为aead的加密模式，不需要配合MAC。）
+Key Exchange (密钥交换)算法：主流有两种：DH和ECDH，自从斯诺登爆料了NSA的https破解方案以后，现在的 key exchange(密钥交换)算法，普遍流行 PFS，把DH, ECDH变成 DHE，ECDHE 。
+
+
+TLS——密钥交换算法——签名算法——WITH——加密算法——摘要算法
+CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM
+表示：
+Key Exchange 密钥交换算法 : ECDHE
+Authentication 签名认证算法: ECDSA
+Encryption  对称加密算法: AES_128_CCM
+MAC摘要算法 :没有这一步
+
+其中密钥交换算法和签名算法可以合二为一。
+
+签名认证算法 ECDSA
+hash  SHA256WITHECDSA
+
+
+
+
+
