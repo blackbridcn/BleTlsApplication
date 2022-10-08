@@ -69,6 +69,7 @@ class SampleMviActivity : AppCompatActivity() {
                     is FetchStatus.Fetched -> {
                         viewModel.dispatch(SampleAction.FetchNews)
                     }
+                    else -> {}
                 }
             }
         }
@@ -90,6 +91,7 @@ class SampleMviActivity : AppCompatActivity() {
                 Snackbar.make(binding.root, event.message, Snackbar.LENGTH_SHORT)
                     .show()
             }
+            else -> {}
         }
     }
 

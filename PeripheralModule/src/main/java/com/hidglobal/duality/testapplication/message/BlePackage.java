@@ -2,7 +2,6 @@ package com.hidglobal.duality.testapplication.message;
 
 
 import com.hidglobal.ui.ble.conn.enums.BleCmdEnum;
-import com.hidglobal.ui.ble.conn.enums.BleEncryptType;
 
 import org.utils.StringUtils;
 

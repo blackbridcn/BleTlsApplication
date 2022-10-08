@@ -1,4 +1,4 @@
-package com.hidglobal.ui.ble.conn.enums
+package com.hidglobal.duality.testapplication.message
 
 /**
  * Author: yuzzha

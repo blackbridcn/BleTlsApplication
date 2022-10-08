@@ -1,4 +1,4 @@
-package com.train.centralmoule
+package com.train.central
 
 import org.junit.Test
 

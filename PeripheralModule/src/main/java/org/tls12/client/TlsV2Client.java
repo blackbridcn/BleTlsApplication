@@ -95,6 +95,7 @@ public class TlsV2Client extends DefaultTlsClient {
         vector.add(22);
 
         TlsExtensionsUtils.addSupportedGroupsExtension(clientExtensions,vector);
+        TlsExtensionsUtils.addSupportedGroupsExtension(clientExtensions,vector);
 
         return clientExtensions;
     }

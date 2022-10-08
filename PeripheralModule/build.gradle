@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId "com.hidglobal.duality.testapplication"
-        minSdk 21
-        targetSdk 31
+        minSdk 27
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -41,12 +41,12 @@ android {
             java {
                 srcDirs = [
                         'src/main/java',
-                        'src/bouncycastle/core',
+                      /*  'src/bouncycastle/core',
                         'src/bouncycastle/pkix',
                         'src/bouncycastle/prov',
                         'src/bouncycastle/tls',
                         'src/bouncycastle/tls_jdk1.5',
-                        'src/bouncycastle/util',
+                        'src/bouncycastle/util',*/
 
                 ]
             }
@@ -62,15 +62,18 @@ android {
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
 
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
 
-    def lifecycle_version = "2.4.0"
+    implementation project(path: ':base')
+    //implementation project(path: ':bouncycastle')
+
+    def lifecycle_version = "2.4.1"
     def arch_version = "2.1.0"
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
@@ -95,11 +98,12 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     //kotlin协程依赖库
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+
     //协程Android库，提供AndroidUI调度器
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
 
-
-    implementation files ('/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/jre/lib/rt.jar')
+///Library/Java/JavaVirtualMachines/jdk1.8.0_333.jdk/Contents/Home
+    implementation files ('/Library/Java/JavaVirtualMachines/jdk1.8.0_333.jdk/Contents/Home/jre/lib/rt.jar')
 
     //bouncycastle
     //api "org.bouncycastle:bctls-jdk15on:1.70"

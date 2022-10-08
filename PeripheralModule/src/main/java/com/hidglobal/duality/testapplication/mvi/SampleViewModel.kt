@@ -40,6 +40,7 @@ class SampleViewModel : ViewModel() {
             is SampleAction.ItemClick -> onItemClick(action.item)
             is SampleAction.FabClick -> onFabClickMethod()
             is SampleAction.FetchNews-> onNewData()
+            else -> {}
         }
 
     }
@@ -72,6 +73,7 @@ class SampleViewModel : ViewModel() {
                         copy(fetchStatus = FetchStatus.Fetched, newsList = result.data)
                     }*/
                 }
+                else -> {}
             }
         }
 

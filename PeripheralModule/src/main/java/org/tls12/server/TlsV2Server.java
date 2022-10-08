@@ -1,7 +1,7 @@
 package org.tls12.server;
 
 
-import com.hidglobal.duality.relay.application.BaseApplication;
+import com.hidglobal.duality.testapplication.application.PeripheralApplication;
 import com.hidglobal.duality.testapplication.R;
 
 import org.bouncycastle.tls.Certificate;
@@ -81,7 +81,7 @@ public class TlsV2Server extends DefaultTlsServer {
     }
 
     protected TlsCredentialedSigner getECDSASignerCredentials() throws IOException {
-        // [RFC 8422] Code should choose based on client's supported sig algs?
+        // [RFC 8422] Code should choose based on client's  supported sig algs?
 
         return loadSignerCredentials(SignatureAlgorithm.ecdsa);
     }
@@ -113,7 +113,7 @@ public class TlsV2Server extends DefaultTlsServer {
     private TlsCredentialedSigner loadSignerCredentials(short signatureAlgorithm) throws IOException {
         return TlsV2Utils.loadSignerCredentialsServer(
                 context,
-                BaseApplication.getContext(),
+                PeripheralApplication.getContext(),
                 new int[]{R.raw.ecc_relay_cert},
                 R.raw.relay_private,
                 getSupportedSignatureAlgorithms(),

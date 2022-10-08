@@ -1,8 +1,7 @@
-package com.hidglobal.duality.relay.application
+package com.hidglobal.duality.testapplication.application
 
-import android.app.Application
-import android.content.Context
-import com.hidglobal.duality.relay.contetant.Constants
+import com.train.base.application.BaseApplication
+import com.hidglobal.duality.testapplication.contetant.Constants
 import org.ble.BleClient
 import org.ble.config.BleConfig
 
@@ -12,12 +11,7 @@ import org.ble.config.BleConfig
  * Description:
  * Remark:
  */
-class BaseApplication : Application() {
-
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(base)
-        context = this
-    }
+class PeripheralApplication : BaseApplication() {
 
     override fun onCreate() {
         super.onCreate()
@@ -36,13 +30,4 @@ class BaseApplication : Application() {
         BleClient.initBlutooth(this, config)
     }
 
-    companion object{
-        @JvmStatic
-        var context: BaseApplication? = null
-            private set
-
-        fun getInstance(): BaseApplication? {
-            return context
-        }
-    }
 }

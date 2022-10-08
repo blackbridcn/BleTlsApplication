@@ -1,4 +1,4 @@
-package com.hidglobal.duality.relay.contetant
+package com.hidglobal.duality.testapplication.contetant
 
 /**
  * Author: yuzzha

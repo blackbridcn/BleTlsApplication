@@ -1,7 +1,7 @@
 package org.tls12.client;
 
 
-import com.hidglobal.duality.relay.application.BaseApplication;
+import com.hidglobal.duality.testapplication.application.PeripheralApplication;
 import com.hidglobal.duality.testapplication.R;
 
 import org.bouncycastle.asn1.x500.X500Name;
@@ -76,7 +76,7 @@ public class ClientTlsAuthentication implements TlsAuthentication {
         TBSCertificate mServerTbsCertificate = mServerCertificate.getTBSCertificate();
 
         //加载根证书校验 服务端传Tls传输过来的证书
-        TlsCertificate rootTlsCertificate = TlsV2Utils.loadCertificateResource(TlsCryptoSelector.getCrypto(), BaseApplication.getContext(), R.raw.ecc_root_cert);
+        TlsCertificate rootTlsCertificate = TlsV2Utils.loadCertificateResource(TlsCryptoSelector.getCrypto(), PeripheralApplication.getContext(), R.raw.ecc_root_cert);
         Certificate rootCertificate = Certificate.getInstance(rootTlsCertificate.getEncoded());
 
         X500Name issuer = mServerTbsCertificate.getIssuer();
@@ -140,7 +140,7 @@ public class ClientTlsAuthentication implements TlsAuthentication {
             //加载客户端CA和私钥
             signerCredentials = TlsV2Utils.loadSignerCredentials(
                     context,
-                    BaseApplication.Companion.getContext(),
+                    PeripheralApplication.Companion.getContext(),
                     new int[]{R.raw.ecc_phone_cert},
                     R.raw.phone_private, signatureAndHashAlgorithm
             );

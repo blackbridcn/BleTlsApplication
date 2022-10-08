@@ -1,10 +1,7 @@
 package com.hidglobal.duality.testapplication.ui
 
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
-import android.content.Intent
-import android.content.ReceiverCallNotAllowedException
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,20 +9,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.collection.ArrayMap
 import androidx.collection.arrayMapOf
-import androidx.navigation.fragment.NavHostFragment.findNavController
-import androidx.navigation.fragment.findNavController
+
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.hidglobal.duality.testapplication.R
 import com.hidglobal.duality.testapplication.databinding.FragmentFirstBinding
 import com.hidglobal.duality.testapplication.message.BleDataUtils
-import com.hidglobal.duality.testapplication.mvi.SampleMviActivity
+import org.tls.protocol.TlsProtocol
 import org.ble.BleClient
 import org.ble.callback.BleGattCallback
-import org.ble.core.central.CentralImpl
 import org.ble.scan.*
 import org.e.ble.utils.HexStrUtils
 import org.recyclerview.IndexOutOfBoundsExcLinearLayoutManager
-import org.tls12.TlsServerUtils
+
+import org.tls.v13.TlsClientUtils
+
+import org.utils.ByteHexUtils
 
 import org.utils.LogUtils
 import java.util.*
@@ -55,9 +52,26 @@ class FirstFragment : Fragment(), AdapterListener {
 
         databind.buttonFirst.setOnClickListener {
             //startActivity(Intent(requireContext(),SampleMviActivity::class.java))
-           findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+
+            // findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+            var ch =   TlsClientUtils.startHello();
+           // var ch = TlsClientUtils.startHello();
+            LogUtils.e(TAG, ByteHexUtils.byteArrayToHexString(ch));
+            if (TlsProtocol.isTlsByteStream(ch)) {
+                var protocol = TlsProtocol.inputTlsBytes(ch);
+                LogUtils.e("TAG", "----------------> ${protocol.toString()}")
+
+             /*   var sc = TlsServerUtils.input(ch);
+                if (sc!=null) {
+                    var protocol = TlsProtocol.inputTlsBytes(sc);
+                }*/
+            }
         }
         initWidget()
+
+        //  var ch = TlsClientUtils.startHello();
+        LogUtils.e("TAG", "----------------_> ")
+        //  LogUtils.e(TAG, ByteHexUtils.byteArrayToHexString(ch));
     }
 
     lateinit var listAdapter: ScanAdapter
@@ -101,7 +115,7 @@ class FirstFragment : Fragment(), AdapterListener {
             .setUseHardwareBatchingIfSupported(false)
             .build()
 
-        LogUtils.e(TAG,"------------>  startScanTask :"+scanner.javaClass.simpleName)
+        LogUtils.e(TAG, "------------>  startScanTask :" + scanner.javaClass.simpleName)
         scanner.startScan(filters, settings, scanCallback)
     }
 
@@ -187,7 +201,7 @@ class FirstFragment : Fragment(), AdapterListener {
                 TAG,
                 "--------------------> onBleServerResp :" + HexStrUtils.byteArrayToHexString(value)
             )
-         //   receiveBuildPackage(gatt, characteristic, value)
+            //   receiveBuildPackage(gatt, characteristic, value)
             BleClient.getInstance().sendMsgToGattServerDevice(
                 gatt, characteristic,
                 BleDataUtils.buildUnlockMsg(Date())
@@ -198,7 +212,7 @@ class FirstFragment : Fragment(), AdapterListener {
 
     var hasHead = false
 
-   // var tlsPackageData: TlsPackageData? = null
+    // var tlsPackageData: TlsPackageData? = null
 
     var temp: MutableList<Byte>? = null
 
@@ -206,60 +220,60 @@ class FirstFragment : Fragment(), AdapterListener {
 
     var raw: ByteArray? = null
 
-  /*  fun receiveBuildPackage(
-        gatt: BluetoothGatt,
-        characteristic: BluetoothGattCharacteristic,
-        value: ByteArray
-    ) {
-        LogUtils.e(
-            TAG, "value : ${value.size} }"
-        )
-        if (value.size > 0) {
+    /*  fun receiveBuildPackage(
+          gatt: BluetoothGatt,
+          characteristic: BluetoothGattCharacteristic,
+          value: ByteArray
+      ) {
+          LogUtils.e(
+              TAG, "value : ${value.size} }"
+          )
+          if (value.size > 0) {
 
-            LogUtils.e(
-                TAG, "  ${hasHead} }"
-            )
+              LogUtils.e(
+                  TAG, "  ${hasHead} }"
+              )
 
-            if (!hasHead) {
-                tlsPackageData = TlsPackageData.initPackage(value)
+              if (!hasHead) {
+                  tlsPackageData = TlsPackageData.initPackage(value)
 
-                if (temp != null) temp!!.clear() else temp = ArrayList<Byte>()
+                  if (temp != null) temp!!.clear() else temp = ArrayList<Byte>()
 
-                packLength = tlsPackageData?.contentLength!! + 5
+                  packLength = tlsPackageData?.contentLength!! + 5
 
-                for (i in 0..value.size - 1) {
-                    temp?.add(value[i])
-                }
-                hasHead = true
-            } else {
-                if ((value.size + temp?.size!!) <= packLength) {
-                    for (i in 0..value.size - 1) {
-                        temp?.add(value[i])
-                    }
-                }
-                LogUtils.e(TAG, " temp size : ${temp?.size.toString()} }")
-                if (temp?.size!! >= packLength) {
-                    var byteArray = ByteArray(temp!!.size)
-                    for (i in temp!!.indices) {
-                        byteArray[i] = temp!!.get(i)
-                    }
-                    temp?.clear()
-                    hasHead = false
-                    handlerResp(gatt, characteristic, byteArray)
-                }
-            }
-        } else {
+                  for (i in 0..value.size - 1) {
+                      temp?.add(value[i])
+                  }
+                  hasHead = true
+              } else {
+                  if ((value.size + temp?.size!!) <= packLength) {
+                      for (i in 0..value.size - 1) {
+                          temp?.add(value[i])
+                      }
+                  }
+                  LogUtils.e(TAG, " temp size : ${temp?.size.toString()} }")
+                  if (temp?.size!! >= packLength) {
+                      var byteArray = ByteArray(temp!!.size)
+                      for (i in temp!!.indices) {
+                          byteArray[i] = temp!!.get(i)
+                      }
+                      temp?.clear()
+                      hasHead = false
+                      handlerResp(gatt, characteristic, byteArray)
+                  }
+              }
+          } else {
 
-        }
-    }*/
+          }
+      }*/
 
     open fun handlerResp(
         gatt: BluetoothGatt,
         characteristic: BluetoothGattCharacteristic,
         resp: ByteArray
     ) {
-        var serverHello = TlsServerUtils.receiverClientHello(resp)
-        BleClient.getInstance().sendMsgToGattServerDevice(gatt, characteristic, serverHello)
+        //  var serverHello = TlsServerUtils.receiverClientHello(resp)
+        //   BleClient.getInstance().sendMsgToGattServerDevice(gatt, characteristic, serverHello)
     }
 }
 
