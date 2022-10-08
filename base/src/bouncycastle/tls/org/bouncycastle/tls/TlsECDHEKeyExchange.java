@@ -5,7 +5,8 @@ import org.bouncycastle.tls.crypto.TlsCertificate;
 import org.bouncycastle.tls.crypto.TlsECConfig;
 import org.bouncycastle.tls.crypto.TlsSecret;
 import org.bouncycastle.util.io.TeeInputStream;
-import org.utils.LogUtils;
+
+import org.utlis.LogUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

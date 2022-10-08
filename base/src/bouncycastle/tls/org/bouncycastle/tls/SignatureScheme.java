@@ -16,6 +16,7 @@ public class SignatureScheme
     public static final int rsa_pkcs1_sha384 = 0x0501;
     public static final int rsa_pkcs1_sha512 = 0x0601;
 
+//sm2p256v1
     public static final int ecdsa_secp256r1_sha256 = 0x0403;
     public static final int ecdsa_secp384r1_sha384 = 0x0503;
     public static final int ecdsa_secp521r1_sha512 = 0x0603;

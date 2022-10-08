@@ -11,6 +11,7 @@ public class SignatureAndHashAlgorithm {
 
     public static final SignatureAndHashAlgorithm ecdsa_brainpoolP256r1tls13_sha256 =
             create(SignatureScheme.ecdsa_brainpoolP256r1tls13_sha256);
+
     public static final SignatureAndHashAlgorithm ecdsa_brainpoolP384r1tls13_sha384 =
             create(SignatureScheme.ecdsa_brainpoolP384r1tls13_sha384);
     public static final SignatureAndHashAlgorithm ecdsa_brainpoolP512r1tls13_sha512 =

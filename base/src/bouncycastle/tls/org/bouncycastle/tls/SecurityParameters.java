@@ -11,7 +11,9 @@ import java.util.Vector;
 public class SecurityParameters
 {
     int entity = -1;
+    //是否再次协商 shankhand
     boolean renegotiating = false;
+
     boolean secureRenegotiation = false;
     int cipherSuite = CipherSuite.TLS_NULL_WITH_NULL_NULL;
     final short compressionAlgorithm = CompressionMethod._null;

@@ -38,7 +38,8 @@ import org.bouncycastle.util.Shorts;
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.util.io.Streams;
 import org.e.ble.utils.HexStrUtils;
-import org.utils.LogUtils;
+
+import org.utlis.LogUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

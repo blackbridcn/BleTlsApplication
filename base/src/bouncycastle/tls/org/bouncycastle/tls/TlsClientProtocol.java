@@ -5,7 +5,8 @@ import org.bouncycastle.tls.crypto.TlsSecret;
 import org.bouncycastle.tls.crypto.TlsStreamSigner;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.Integers;
-import org.utils.LogUtils;
+import org.utlis.LogUtils;
+
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -1528,6 +1529,10 @@ public class TlsClientProtocol
         message.send(this);
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     protected void sendClientHello()
             throws IOException {
         SecurityParameters securityParameters = tlsClientContext.getSecurityParametersHandshake();
@@ -1547,7 +1552,9 @@ public class TlsClientProtocol
                 // TODO[tls13] Prevent offering SSLv3 AND TLSv13?
                 recordStream.setWriteVersion(ProtocolVersion.SSLv3);
             } else {
-                recordStream.setWriteVersion(ProtocolVersion.TLSv12);
+                //recordStream.setWriteVersion(ProtocolVersion.TLSv12);
+                //yzzhang
+                recordStream.setWriteVersion(ProtocolVersion.TLSv13);
             }
 
             earliestVersion = ProtocolVersion.getEarliestTLS(supportedVersions);
@@ -1564,7 +1571,7 @@ public class TlsClientProtocol
 
         final boolean offeringTLSv12Minus = ProtocolVersion.TLSv12.isEqualOrLaterVersionOf(earliestVersion);
         final boolean offeringTLSv13Plus = ProtocolVersion.TLSv13.isEqualOrEarlierVersionOf(latestVersion);
-
+        //TlsSession 在tls13中取消，这里是判断是否兼容 tls1.2(tls1.2中继续保留里TlsSession)
         establishSession(offeringTLSv12Minus ? tlsClient.getSessionToResume() : null);
         tlsClient.notifySessionToResume(tlsSession);
 
@@ -1577,7 +1584,7 @@ public class TlsClientProtocol
         boolean fallback = tlsClient.isFallback();
 
         int[] offeredCipherSuites = tlsClient.getCipherSuites();
-
+        //Session ID  1.3开始取消
         if (legacy_session_id.length > 0 && this.sessionParameters != null) {
             if (!Arrays.contains(offeredCipherSuites, sessionParameters.getCipherSuite())
                     || CompressionMethod._null != sessionParameters.getCompressionAlgorithm()) {
@@ -1585,7 +1592,7 @@ public class TlsClientProtocol
                 legacy_session_id = TlsUtils.EMPTY_BYTES;
             }
         }
-
+        //读取开发者 自定义添加的扩张参数
         this.clientExtensions = TlsExtensionsUtils.ensureExtensionsInitialised(tlsClient.getClientExtensions());
 
         ProtocolVersion legacy_version = latestVersion;
@@ -1606,7 +1613,7 @@ public class TlsClientProtocol
         tlsClientContext.setRSAPreMasterSecretVersion(legacy_version);
 
         securityParameters.clientServerNames = TlsExtensionsUtils.getServerNameExtensionClient(clientExtensions);
-
+        //tls1.2中签名算法，和摘要算法
         if (TlsUtils.isSignatureAlgorithmsExtensionAllowed(latestVersion)) {
             TlsUtils.establishClientSigAlgs(securityParameters, clientExtensions);
         }
