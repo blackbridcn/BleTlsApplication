@@ -1,4 +1,4 @@
-package org.e.ble.utils
+package org.ble.utils
 
 import java.lang.StringBuilder
 
@@ -8,48 +8,47 @@ import java.lang.StringBuilder
  * Description:
  * Remark:
  */
-class HexStrUtils {
-    companion object {
-        fun hexToByteArray(src: String?): ByteArray? {
-            if (src == null || src.length == 0) {
-                return null
-            }
-            var data = src.toUpperCase()
-            var size = src.length / 2
-            var result = ByteArray(size)
-            var cAny = data.toCharArray()
-            for (i in 0..(size - 1)) {
-                val poi = i * 2
-                result[i] = (charToByte(cAny[poi]).toInt() shl 4).or(charToByte(cAny[poi + 1]).toInt())
-                    .and(0xFF).toByte()
-            }
-            return result
-        }
+object HexStrUtils {
 
-        private fun charToByte(c: Char): Byte {
-            return "0123456789ABCDEF".indexOf(c).toByte()
+    fun hexToByteArray(src: String?): ByteArray? {
+        if (src == null || src.length == 0) {
+            return null
         }
-
-        fun byteArrayToHexString(src: ByteArray?): String? {
-            var builder = StringBuilder()
-            if (src == null || src.size <= 0) {
-                return null
-            }
-            var temp: Int
-            for (i in src.indices) {
-                temp = src[i].toInt()
-                if (temp < 0) {
-                    temp = temp + 256
-                }
-                var index = temp and 0xFF
-                val hex = Integer.toHexString(index)
-                if (hex.length < 2) {
-                    builder.append("0")
-                }
-                builder.append(hex)
-            }
-            return builder.toString().uppercase()
+        var data = src.toUpperCase()
+        var size = src.length / 2
+        var result = ByteArray(size)
+        var cAny = data.toCharArray()
+        for (i in 0..(size - 1)) {
+            val poi = i * 2
+            result[i] = (charToByte(cAny[poi]).toInt() shl 4).or(charToByte(cAny[poi + 1]).toInt())
+                .and(0xFF).toByte()
         }
-
+        return result
     }
+
+    private fun charToByte(c: Char): Byte {
+        return "0123456789ABCDEF".indexOf(c).toByte()
+    }
+
+    fun byteArrayToHexString(src: ByteArray?): String{
+        var builder = StringBuilder()
+        if (src == null || src.size <= 0) {
+            return ""
+        }
+        var temp: Int
+        for (i in src.indices) {
+            temp = src[i].toInt()
+            if (temp < 0) {
+                temp = temp + 256
+            }
+            var index = temp and 0xFF
+            val hex = Integer.toHexString(index)
+            if (hex.length < 2) {
+                builder.append("0")
+            }
+            builder.append(hex)
+        }
+        return builder.toString().uppercase()
+    }
+
 }

@@ -13,9 +13,8 @@ import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresPermission;
 
-
-import org.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,11 +37,13 @@ class BluetoothLeScannerImplLollipop extends BluetoothScannerProvider {
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_SCAN)
     protected void startScanInternal(List<ScanFilter> filters, ScanSettings settings, BlzScanCallback callback) {
         startScanInternal(filters, settings, callback, new Handler(Looper.getMainLooper()));
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_SCAN)
     protected void startScanInternal(List<ScanFilter> filters, ScanSettings settings, BlzScanCallback callback, Handler handler) {
         final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         final BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
@@ -74,6 +75,7 @@ class BluetoothLeScannerImplLollipop extends BluetoothScannerProvider {
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_SCAN)
     protected void stopScanInternal(BlzScanCallback callback) {
         ScanCallbackWrapperLollipop wrapper;
         synchronized (wrappers) {
@@ -121,6 +123,7 @@ class BluetoothLeScannerImplLollipop extends BluetoothScannerProvider {
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_SCAN)
     public void flushPendingScanResults(@NonNull BlzScanCallback callback) {
         final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         //noinspection ConstantConditions

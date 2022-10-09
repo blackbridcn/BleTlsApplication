@@ -20,17 +20,18 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 
 import org.ble.callback.BleGattServerCallback;
 import org.ble.callback.ClientReqCallback;
-import org.ble.core.BleCoreImpl;
 import org.ble.utils.BleBoothHelp;
-import org.e.ble.utils.HexStrUtils;
+import org.ble.utils.Logger;
+import org.ble.utils.HexStrUtils;
 
 import org.jetbrains.annotations.NotNull;
-import org.utils.ByteHexUtils;
-import org.utils.LogUtils;
-import org.utils.StringUtils;
+
+import org.utlis.StringUtils;
+
 
 import java.util.UUID;
 
@@ -87,13 +88,14 @@ public class PeripheralImpl implements PeripheralCore {
         if (this.bluetoothAdapter != null && bluetoothAdapter.isMultipleAdvertisementSupported()) {
 
         } else {
-            LogUtils.i(TAG, "this phone not supported ble advertisement ");
+            Logger.i(TAG, "this phone not supported ble advertisement ");
         }
-        LogUtils.i(TAG, "peripheral init ");
+        Logger.i(TAG, "peripheral init ");
     }
 
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_ADVERTISE)
     public void startAdvertising(
             @NonNull AdvertiseSettings settings,
             @NonNull AdvertiseData advertiseData,
@@ -101,7 +103,9 @@ public class PeripheralImpl implements PeripheralCore {
         this.mBluetoothLeAdvertiser.startAdvertising(settings, advertiseData, callback);
     }
 
+    //@RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_ADVERTISE)
     public void startAdvertising(
             @NonNull String serviceUUID,
             @NonNull AdvertiseCallback callback) {
@@ -113,6 +117,7 @@ public class PeripheralImpl implements PeripheralCore {
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_ADVERTISE)
     public void startAdvertising(
             @NonNull byte[] serviceUUID,
             @NonNull AdvertiseCallback callback) {
@@ -124,10 +129,11 @@ public class PeripheralImpl implements PeripheralCore {
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_ADVERTISE)
     public void stopAdvertising(
             @NonNull AdvertiseCallback callback) {
         if (this.mBluetoothLeAdvertiser != null) {
-            LogUtils.e(TAG, "stopAdvertising ");
+            Logger.e(TAG, "stopAdvertising ");
             this.mBluetoothLeAdvertiser.stopAdvertising(callback);
         }
     }
@@ -176,6 +182,7 @@ public class PeripheralImpl implements PeripheralCore {
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void startGattServer(
             @NonNull String serviceUuid,
             @NonNull String rxCharUuid,
@@ -188,6 +195,7 @@ public class PeripheralImpl implements PeripheralCore {
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void startGattServer(
             @NonNull String serviceUuid,
             @NonNull String rxCharUuid,
@@ -206,6 +214,7 @@ public class PeripheralImpl implements PeripheralCore {
         this.bleGattServerCallback = serverCallback;
     }
 
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void openGattServer(String serviceUuid, String rxCharUuid, String
             txCharUuid, String mCCCDUuid) {
         cccdValue = new byte[2];
@@ -245,29 +254,31 @@ public class PeripheralImpl implements PeripheralCore {
             //boolean hasGattServer =
             mBluetoothGattServer.addService(gattService);
         } catch (Exception e) {
-            LogUtils.e(TAG, "BluetoothGattServer addService  Exception :" + e.getMessage());
+            Logger.e(TAG, "BluetoothGattServer addService  Exception :" + e.getMessage());
         }
-        LogUtils.e(TAG,
+        Logger.e(TAG,
                 String.format(" startGattServer \n serviceUuid = %s,\n rxCharUuid = %s,\n txCharUuid =%s,\n mCCCDUuid= %s",
                         serviceUuid, rxCharUuid, txCharUuid, mCCCDUuid));
     }
 
     //周边
     private BluetoothGattServerCallback gattServerCallback = new BluetoothGattServerCallback() {
+
         @Override
+        @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
         public void onConnectionStateChange(BluetoothDevice device, int status, int newState) {
             super.onConnectionStateChange(device, status, newState);
-            LogUtils.e(TAG, "onConnectionStateChange status :" + status + "  newState :" + newState);
+            Logger.e(TAG, "onConnectionStateChange status :" + status + "  newState :" + newState);
             //long startTime = System.currentTimeMillis();
             if (!hasConnClient && newState == BluetoothProfile.STATE_CONNECTED) {
                 if (StringUtils.isNotEmpty(device.getName()) /*&& device.getName().startsWith("Mi Smart Band")*/) {
                     //smartBrandTime=startTime;
                     // hasBrands=true;
-                    LogUtils.e(TAG, "-------> 连接到手环 Address :" + device.getAddress() + " Name:" + device.getName());
+                    Logger.e(TAG, "-------> 连接到手环 Address :" + device.getAddress() + " Name:" + device.getName());
                     disConnGattClient(device);
                 } else {
                     // hasBrands=false;
-                    LogUtils.e(TAG, "gattServerCallback 连接成功 Address :" + device.getAddress() + " Name:" + device.getName());
+                    Logger.e(TAG, "gattServerCallback 连接成功 Address :" + device.getAddress() + " Name:" + device.getName());
                     clientDevice = device;
                     hasConnClient = true;
                     if (bleGattServerCallback != null) {
@@ -276,9 +287,9 @@ public class PeripheralImpl implements PeripheralCore {
                 }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 if (StringUtils.isNotEmpty(device.getName())) {
-                    LogUtils.e(TAG, "lastLink 手环  Address :" + device.getName());
+                    Logger.e(TAG, "lastLink 手环  Address :" + device.getName());
                 } else if (hasConnClient) {
-                    LogUtils.e(TAG, "断开连接  currLink:" + device.getAddress());
+                    Logger.e(TAG, "断开连接  currLink:" + device.getAddress());
                     if (TextUtils.equals(clientDevice.getAddress(), device.getAddress())) {
                         hasConnClient = false;
                         clientDevice = null;
@@ -295,30 +306,32 @@ public class PeripheralImpl implements PeripheralCore {
         public void onServiceAdded(int status, BluetoothGattService service) {
             super.onServiceAdded(status, service);
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                LogUtils.e(TAG, "添加Gatt服务成功 UUUID =  " + service.getUuid());
+                Logger.e(TAG, "添加Gatt服务成功 UUUID =  " + service.getUuid());
                 if (bleGattServerCallback != null) {
                     bleGattServerCallback.onServiceStarted();
                 }
             } else {
-                LogUtils.e(TAG, "添加Gatt服务失败");
+                Logger.e(TAG, "添加Gatt服务失败");
             }
         }
 
         //响应客户端 读取 特征值 回调函數
         @Override
+        @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
         public void onCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset,
                                                 BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicReadRequest(device, requestId, offset, characteristic);
             //A remote client has requested to read a local characteristic.
             mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
 
-            LogUtils.e(TAG, " onCharacteristicReadRequest \n" +
+            Logger.e(TAG, " onCharacteristicReadRequest \n" +
                     " UUID: " + characteristic.getUuid().toString() + "\n" +
                     " txUUID :" + txCharUuid);
         }
 
         //响应客户端 写入 特征值 回调函數
         @Override
+        @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
         public void onCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
             super.onCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
             //A remote client has requested to write to a local characteristic.
@@ -326,8 +339,8 @@ public class PeripheralImpl implements PeripheralCore {
             characteristic.setValue(value);
             //响应客户端
             mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value);
-            LogUtils.e(TAG, " onCharacteristicWriteRequest \n" +
-                    " Value: " + ByteHexUtils.INSTANCE.byteArrayToHexString(value) + "\n" +
+            Logger.e(TAG, " onCharacteristicWriteRequest \n" +
+                    " Value: " + HexStrUtils.INSTANCE.byteArrayToHexString(value) + "\n" +
                     " UUID: " + characteristic.getUuid().toString()
             );
             //这里是Rx characteristic
@@ -341,6 +354,7 @@ public class PeripheralImpl implements PeripheralCore {
 
         //响应客户端 读取 描述 回调函數
         @Override
+        @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
         public void onDescriptorReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattDescriptor descriptor) {
             super.onDescriptorReadRequest(device, requestId, offset, descriptor);
             //A remote client has requested to read a local descriptor.
@@ -352,15 +366,16 @@ public class PeripheralImpl implements PeripheralCore {
                     && TextUtils.equals(characteristic.getUuid().toString(), txCharUuid)
             ) {
                 mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, cccdValue);
-                LogUtils.e(TAG, " --- > onDescriptorReadRequest GATT_SUCCESS " + ByteHexUtils.INSTANCE.byteArrayToHexString(cccdValue));
+                Logger.e(TAG, " --- > onDescriptorReadRequest GATT_SUCCESS " + HexStrUtils.INSTANCE.byteArrayToHexString(cccdValue));
             } else {
                 mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, null);
-                LogUtils.e(TAG, " --- > onDescriptorReadRequest GATT_FAILURE ");
+                Logger.e(TAG, " --- > onDescriptorReadRequest GATT_FAILURE ");
             }
         }
 
         //响应客户端 写入 描述 回调函數
         @Override
+        @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
         public void onDescriptorWriteRequest(BluetoothDevice device, int requestId, BluetoothGattDescriptor descriptor,
                                              boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
             super.onDescriptorWriteRequest(device, requestId, descriptor, preparedWrite, responseNeeded, offset, value);
@@ -376,17 +391,17 @@ public class PeripheralImpl implements PeripheralCore {
                 txCharacteristic = characteristic;
                 System.arraycopy(value, 0, cccdValue, 0, 2);
                 mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null);
-                LogUtils.e(TAG, " ----> onDescriptorWriteRequest \n" +
+                Logger.e(TAG, " ----> onDescriptorWriteRequest \n" +
                         " BluetoothGatt.GATT_SUCCESS \n" +
-                        " Value: " + ByteHexUtils.INSTANCE.byteArrayToHexString(value) + "\n" +
+                        " Value: " + HexStrUtils.INSTANCE.byteArrayToHexString(value) + "\n" +
                         " Thread :" + Thread.currentThread().getName() + "\n" +
-                        " mCCCD Value:" + ByteHexUtils.INSTANCE.byteArrayToHexString(value));
+                        " mCCCD Value:" + HexStrUtils.INSTANCE.byteArrayToHexString(value));
                 if (bleGattServerCallback != null) {
                     // bleGattServerCallback.onDescriptorReadRequest();
                 }
             } else {
                 mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, null);
-                LogUtils.e(TAG, "----> onDescriptorWriteRequest \n " +
+                Logger.e(TAG, "----> onDescriptorWriteRequest \n " +
                         " descriptor UUID :" + descriptor.getUuid().toString() + "\n " +
                         " characteristic :" + characteristic + " \n" +
                         " BluetoothGatt.GATT_FAILURE");
@@ -394,10 +409,11 @@ public class PeripheralImpl implements PeripheralCore {
         }
 
         @Override
+        @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
         public void onNotificationSent(BluetoothDevice device, int status) {
             super.onNotificationSent(device, status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                LogUtils.e(TAG, device.getAddress() + " 通知发送成功");
+                Logger.e(TAG, device.getAddress() + " 通知发送成功");
                 ++clientMsgCount;
                 if (clientMsgCount < clientPackage.length) {
                     txCharacteristic.setValue(clientPackage[clientMsgCount]);
@@ -405,7 +421,7 @@ public class PeripheralImpl implements PeripheralCore {
                 }
             } else {
                 //closeGattServer();
-                LogUtils.e(TAG, device.getAddress() + " 通知发送失败 status = " + status);
+                Logger.e(TAG, device.getAddress() + " 通知发送失败 status = " + status);
             }
         }
 
@@ -415,33 +431,35 @@ public class PeripheralImpl implements PeripheralCore {
             if (mtu > 23) {
                 maxMtu = mtu - 3;
             }
-            LogUtils.e(TAG, "onMtuChanged mtu :" + mtu);
+            Logger.e(TAG, "onMtuChanged mtu :" + mtu);
         }
 
         //interval：连接间隔（connection intervals ），范围在 7.5 毫秒 到 4 秒。
         //latency：连接延迟
         public void onConnectionUpdated(BluetoothDevice device, int interval, int latency, int timeout,
                                         int status) {
-            LogUtils.e(TAG,"onConnectionUpdated  interval ");
+            Logger.e(TAG,"onConnectionUpdated  interval ");
         }
 
 
     };
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void sendMsgToGattClient(@NonNull byte[] respMsg, @NonNull ClientReqCallback clientReqCallback) {
         this.clientReqCallback = clientReqCallback;
         sendMsgToGattClient(respMsg);
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void sendMsgToGattClient(@NonNull byte[] respMsg) {
         if (hasConnGattClient()) {
             clientMsgCount = 0;
             clientMsgIndex = 0;
             this.clientPackage = BleBoothHelp.Companion.splitMsgPackage(respMsg, maxMtu);
-            LogUtils.e(TAG, " sendMsgToGattClient data :\n" +
-                    HexStrUtils.Companion.byteArrayToHexString(respMsg) + " \n" +
+            Logger.e(TAG, " sendMsgToGattClient data :\n" +
+                    HexStrUtils.INSTANCE.byteArrayToHexString(respMsg) + " \n" +
                     clientPackage.length);
 
             if (txCharacteristic == null) {
@@ -453,7 +471,7 @@ public class PeripheralImpl implements PeripheralCore {
             txCharacteristic.setValue(clientPackage[index]);
 
             boolean notifyCharacteristicChanged = mBluetoothGattServer.notifyCharacteristicChanged(clientDevice, txCharacteristic, false);
-            LogUtils.e(TAG, "sendMsgToGattClient \n " +
+            Logger.e(TAG, "sendMsgToGattClient \n " +
                     "---> notifyCharacteristicChanged  : " + notifyCharacteristicChanged);
         }
     }
@@ -466,13 +484,15 @@ public class PeripheralImpl implements PeripheralCore {
         return clientDevice == null ? "" : clientDevice.getAddress();
     }
 
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void disConnGattClient(BluetoothDevice device) {
         mBluetoothGattServer.cancelConnection(device);
     }
 
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void closeGattServer() {
         if (mBluetoothGattServer != null) {
-            LogUtils.e(TAG, "closeGattServer");
+            Logger.e(TAG, "closeGattServer");
             if (hasConnGattClient()) {
                 disConnGattClient(clientDevice);
             }

@@ -7,7 +7,7 @@ import org.bouncycastle.tls.ExtensionType;
 import org.bouncycastle.tls.ProtocolVersion;
 import org.bouncycastle.tls.TlsFatalAlert;
 import org.bouncycastle.util.io.Streams;
-import org.e.ble.utils.HexStrUtils;
+import org.ble.utils.HexStrUtils;
 import org.utlis.ByteHexUtils;
 import org.utlis.LogUtils;
 
@@ -337,24 +337,24 @@ public class HandshakeData implements TlsProtoBodyData {
     public String clientHelloString() {
         StringBuffer buffer = new StringBuffer();
         String s0 = ", UnixTime=" + getSimpleDate(helloTimes) +
-                ", ClientRandom=" + HexStrUtils.Companion.byteArrayToHexString(random) +
+                ", ClientRandom=" + ByteHexUtils.INSTANCE.byteArrayToHexString(random) +
                 ", sessionIdLength=" + sessionIdLength;
         buffer.append(s0);
         if (sessionIdLength > 0) {
-            buffer.append(", sessionId=" + HexStrUtils.Companion.byteArrayToHexString(sessionId));
+            buffer.append(", sessionId=" + ByteHexUtils.INSTANCE.byteArrayToHexString(sessionId));
         }
         buffer.append(", cipherSuiteLength=" + cipherSuiteLength + "(" + (cipherSuiteLength / 2) + "个密码套件)");
         if (cipherSuiteLength > 0) {
-            buffer.append(", cipherSuite=" + HexStrUtils.Companion.byteArrayToHexString(cipherSuite));
+            buffer.append(", cipherSuite=" + ByteHexUtils.INSTANCE.byteArrayToHexString(cipherSuite));
         }
         buffer.append(", compressionMethodsLength=" + compressionMethodsLength);
         if (compressionMethodsLength > 0) {
-            buffer.append(", compressionMethods=" + HexStrUtils.Companion.byteArrayToHexString(compressionMethods));
+            buffer.append(", compressionMethods=" + ByteHexUtils.INSTANCE.byteArrayToHexString(compressionMethods));
         }
         buffer.append(", extensionLength=" + extensionLength);
         if (extensionLength > 0) {
             buffer.append(", extension=" + handshakeExtensionString());/*
-                        HexStrUtils.Companion.byteArrayToHexString(extension));*/
+                        ByteHexUtils.INSTANCE.byteArrayToHexString(extension));*/
 
         }
 
@@ -366,21 +366,21 @@ public class HandshakeData implements TlsProtoBodyData {
     public String serverHelloString() {
         StringBuffer buffer = new StringBuffer();
         String s0 = ", UnixTime=" + getSimpleDate(helloTimes) +
-                ", ServerRandom=" + HexStrUtils.Companion.byteArrayToHexString(random) +
+                ", ServerRandom=" + ByteHexUtils.INSTANCE.byteArrayToHexString(random) +
                 ", sessionIdLength=" + sessionIdLength;
         buffer.append(s0);
         if (sessionIdLength > 0) {
-            buffer.append(", sessionId=" + HexStrUtils.Companion.byteArrayToHexString(sessionId));
+            buffer.append(", sessionId=" + ByteHexUtils.INSTANCE.byteArrayToHexString(sessionId));
         }
-        buffer.append(", cipherSuite=" + HexStrUtils.Companion.byteArrayToHexString(cipherSuite));
+        buffer.append(", cipherSuite=" + ByteHexUtils.INSTANCE.byteArrayToHexString(cipherSuite));
         buffer.append(", compressionMethodsLength=" + compressionMethodsLength);
         if (compressionMethodsLength > 0) {
-            buffer.append(", compressionMethods=" + HexStrUtils.Companion.byteArrayToHexString(compressionMethods));
+            buffer.append(", compressionMethods=" + ByteHexUtils.INSTANCE.byteArrayToHexString(compressionMethods));
         }
         buffer.append(", extensionLength=" + extensionLength);
         if (extensionLength > 0) {
             buffer.append(", extension=" + handshakeExtensionString());/*
-                        HexStrUtils.Companion.byteArrayToHexString(extension));*/
+                        ByteHexUtils.INSTANCE.byteArrayToHexString(extension));*/
 
         }
 

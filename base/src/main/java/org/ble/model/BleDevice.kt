@@ -1,7 +1,7 @@
 package org.ble.model
 
 import android.bluetooth.BluetoothDevice
-import org.e.ble.utils.HexStrUtils
+import org.ble.utils.HexStrUtils
 
 /**
  * Author: yuzzha

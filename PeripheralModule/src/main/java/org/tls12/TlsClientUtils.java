@@ -3,7 +3,7 @@ package org.tls12;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tls.ByteQueue;
 import org.bouncycastle.tls.TlsClientProtocol;
-import org.e.ble.utils.HexStrUtils;
+import org.ble.utils.HexStrUtils;
 import org.tls12.client.TlsV2Client;
 import org.tls12.selector.TlsCryptoSelector;
 import org.utils.LogUtils;
@@ -118,7 +118,7 @@ public class TlsClientUtils {
             if (dataAvailable != 0) {
                 data = new byte[dataAvailable];
                 tlsClientProtocol.readOutput(data, 0, dataAvailable);
-                LogUtils.e(TAG, "----------------------> : " + HexStrUtils.Companion.byteArrayToHexString(data));
+                LogUtils.e(TAG, "----------------------> : " + HexStrUtils.INSTANCE.byteArrayToHexString(data));
             }
             handshakeFinished = tlsV2Client.handshakeFinished;
 

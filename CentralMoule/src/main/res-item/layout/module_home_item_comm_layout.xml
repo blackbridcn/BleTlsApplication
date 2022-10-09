@@ -60,6 +60,7 @@
             android:textAllCaps="false"
             android:text="@string/app_name"
             android:textSize="@dimen/base_dimen_16sp"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"

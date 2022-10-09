@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 33
     buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "com.train.central"
-        minSdk 21
-        targetSdk 31
+        minSdk 26
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -30,7 +30,8 @@ android {
         jvmTarget = '1.8'
     }
     buildFeatures {
-        viewBinding true
+        //noinspection DataBindingWithoutKapt
+        dataBinding true
     }
 
     sourceSets {
@@ -83,9 +84,6 @@ dependencies {
     // Lifecycles only (without ViewModel or LiveData)
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
 
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation project(path: ':base')
 }

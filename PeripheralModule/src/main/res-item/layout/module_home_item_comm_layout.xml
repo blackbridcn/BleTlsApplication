@@ -11,7 +11,7 @@
 
         <variable
             name="listener"
-            type="com.hidglobal.duality.testapplication.ui.AdapterListener" />
+            type="com.train.peripheral.ui.AdapterListener" />
 
     </data>
 

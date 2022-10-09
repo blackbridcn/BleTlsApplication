@@ -16,15 +16,17 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 
 import org.ble.callback.BleGattCallback;
 import org.ble.config.BleConfig;
 import org.ble.exception.BleErrorCode;
 import org.ble.exception.EnumErrorCode;
 import org.ble.utils.BleBoothHelp;
+import org.ble.utils.Logger;
 import org.ble.utils.ObjectHelp;
-import org.e.ble.utils.HexStrUtils;
-import org.utils.LogUtils;
+import org.ble.utils.HexStrUtils;
+
 
 import java.lang.reflect.Method;
 import java.util.UUID;
@@ -67,22 +69,25 @@ public class CentralImpl implements CentralCore {
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void connectGattServer(@Nullable String address, @Nullable BleGattCallback bleGattCallback) {
         executeConnectGattTask(bluetoothAdapter.getRemoteDevice(ObjectHelp.checkNotEmpty(address)), false, bleGattCallback);
     }
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void connectGattServer(@Nullable BluetoothDevice device, boolean autoConnect, @Nullable BleGattCallback bleGattCallback) {
         executeConnectGattTask(device, autoConnect, bleGattCallback);
     }
 
 
     @Override
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void sendMsgToGattServerDevice(@NonNull BluetoothGatt gatt,
                                           @NonNull BluetoothGattCharacteristic characteristic,
                                           @Nullable byte[] msg) {
 
-        LogUtils.e(TAG, "----------------->sendMsgToGattServerDevice :" + HexStrUtils.Companion.byteArrayToHexString(msg));
+        Logger.e(TAG, "----------------->sendMsgToGattServerDevice :" + HexStrUtils.INSTANCE.byteArrayToHexString(msg));
 
         count = 0;
         index = 0;
@@ -99,15 +104,16 @@ public class CentralImpl implements CentralCore {
                 onDisAndClear(gatt, this.characteristic);
                 return;
             }
-            LogUtils.e(TAG, "-------------------> gatt.getService  ");
+            Logger.e(TAG, "-------------------> gatt.getService  ");
             txCharacteristic = service.getCharacteristic(UUID.fromString(config.getTxCharacterUuid()));
         }
         txCharacteristic.setValue(sendPackage[index]);
         ++index;
         boolean writeCharacteristic = gatt.writeCharacteristic(characteristic);
-        LogUtils.e(TAG, "-------------------->  writeCharacteristic :" + writeCharacteristic);
+        Logger.e(TAG, "-------------------->  writeCharacteristic :" + writeCharacteristic);
     }
 
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     private void executeConnectGattTask(@Nullable BluetoothDevice device, boolean autoConnect, @Nullable BleGattCallback bleGattCallback) {
         if (!this.bluetoothAdapter.isEnabled()) {
             return;
@@ -124,6 +130,7 @@ public class CentralImpl implements CentralCore {
 
     private BleGattCallback bleGattCallback;
 
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     private BluetoothGatt connectGatt(@Nullable BluetoothDevice device, boolean autoConnect) {
         BluetoothGatt gatt;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -148,8 +155,9 @@ public class CentralImpl implements CentralCore {
     private BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
 
         @Override
+        @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
         public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
-            LogUtils.e(TAG, "--------------------> onConnectionStateChange status :" + status);
+            Logger.e(TAG, "--------------------> onConnectionStateChange status :" + status);
           /*  if (status != BluetoothGatt.GATT_SUCCESS) {
                 // BluetoothGatt.GATT_SUCCESS  表示 connect or disconnect operation 操作成功
                 onDisAndClear(gatt, characteristic);
@@ -164,9 +172,9 @@ public class CentralImpl implements CentralCore {
             // Check whether an error occurred
             /* if (status == BluetoothGatt.GATT_SUCCESS) {*/
             if (newState == BluetoothGatt.STATE_CONNECTED) {
-                LogUtils.e(TAG, "--------------------> onConnectionStateChange STATE_CONNECTED ");
+                Logger.e(TAG, "--------------------> onConnectionStateChange STATE_CONNECTED ");
                 /*if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_BONDED) {*/
-                LogUtils.e(TAG, "--------------------> onConnectionStateChange onConningServer ");
+                Logger.e(TAG, "--------------------> onConnectionStateChange onConningServer ");
                 bleGattCallback.onConningServer();
                 // After 1.6s the services are already discovered so the following gatt.discoverServices() finishes almost immediately.
                 // NOTE: This also works with shorted waiting time.
@@ -184,7 +192,7 @@ public class CentralImpl implements CentralCore {
                 // 设备连接上 开始扫描服务
                 // 开始扫描服务，安卓蓝牙开发重要步骤之一
                 boolean hasServices = gatt.discoverServices();
-                LogUtils.e(TAG, "--------------------> onConnectionStateChange discoverServices :" + hasServices);
+                Logger.e(TAG, "--------------------> onConnectionStateChange discoverServices :" + hasServices);
                 if (!hasServices) {
                     if (bleGattCallback != null) {
                         bleGattCallback.onConningFail(BleGattCallback.CONN_FAIL_DISCOVER_SERVICE);
@@ -192,7 +200,7 @@ public class CentralImpl implements CentralCore {
                     onDisAndClear(gatt, characteristic);
                 }
                // boolean mtu = requestMtu(gatt);
-               // LogUtils.e(TAG, "--------------------> onConnectionStateChange mtu :" + mtu);
+               // Logger.e(TAG, "--------------------> onConnectionStateChange mtu :" + mtu);
                 /*}*/
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
                 if (bleGattCallback != null) {
@@ -212,8 +220,9 @@ public class CentralImpl implements CentralCore {
 
 
         @Override
+        @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
         public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
-            LogUtils.e(TAG, "--------------------> onServicesDiscovered  status:" + status);
+            Logger.e(TAG, "--------------------> onServicesDiscovered  status:" + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
 
                 processServiceDiscovered(gatt, status,
@@ -227,13 +236,14 @@ public class CentralImpl implements CentralCore {
         @Override
         public void onServiceChanged(@NonNull BluetoothGatt gatt) {
             super.onServiceChanged(gatt);
-            LogUtils.e(TAG, "--------------------> onServiceChanged  ");
+            Logger.e(TAG, "--------------------> onServiceChanged  ");
         }
 
         // Other methods just pass the parameters through
         @Override
+        @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            LogUtils.e(TAG, "--------------------> 数据成功发送 onCharacteristicWrite status:" + status);
+            Logger.e(TAG, "--------------------> 数据成功发送 onCharacteristicWrite status:" + status);
             //requestMtu(gatt);
             //数据成功发送
             processCharacteristicWrite(gatt, characteristic, status, bleGattCallback);
@@ -241,7 +251,7 @@ public class CentralImpl implements CentralCore {
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            LogUtils.e(TAG, "--------------------> onCharacteristicRead ");
+            Logger.e(TAG, "--------------------> onCharacteristicRead ");
 
         }
 
@@ -249,7 +259,7 @@ public class CentralImpl implements CentralCore {
         // GATT SERVER对characteristic进行操作后，GATT回调的通知函数 ； 就是从机发送数据了
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            LogUtils.e(TAG, "--------------------> onCharacteristicChanged  characteristic:" + characteristic.getUuid().toString());
+            Logger.e(TAG, "--------------------> onCharacteristicChanged  characteristic:" + characteristic.getUuid().toString());
             processCharacteristicChanged(gatt, characteristic);
         }
 
@@ -257,7 +267,7 @@ public class CentralImpl implements CentralCore {
         @Override
         public void onReliableWriteCompleted(BluetoothGatt gatt, int status) {
             super.onReliableWriteCompleted(gatt, status);
-            LogUtils.e(TAG, "--------------------> onReliableWriteCompleted  characteristic:" + characteristic.getUuid().toString());
+            Logger.e(TAG, "--------------------> onReliableWriteCompleted  characteristic:" + characteristic.getUuid().toString());
 
         }
 
@@ -274,7 +284,7 @@ public class CentralImpl implements CentralCore {
         @SuppressLint("NewApi")
         @Override
         public void onMtuChanged(final BluetoothGatt gatt, final int mtu, final int status) {
-            LogUtils.e(TAG, "--------------------> onMtuChanged mtu:" + mtu + " status :" + status);
+            Logger.e(TAG, "--------------------> onMtuChanged mtu:" + mtu + " status :" + status);
             if (status == BluetoothGatt.GATT_SUCCESS && mtu > 23) {
                 maxMtu = mtu - 3;
             }
@@ -283,7 +293,7 @@ public class CentralImpl implements CentralCore {
         @SuppressLint("NewApi")
         @Override
         public void onPhyUpdate(final BluetoothGatt gatt, final int txPhy, final int rxPhy, final int status) {
-            LogUtils.e(TAG, "------------------------> onPhyUpdate txPhy: " + txPhy + " rxPhy:" + rxPhy);
+            Logger.e(TAG, "------------------------> onPhyUpdate txPhy: " + txPhy + " rxPhy:" + rxPhy);
         }
 
 
@@ -300,6 +310,7 @@ public class CentralImpl implements CentralCore {
      * @param rxCharacterUuid String  用来接受GATT_SERVER 发送来的数据  BluetoothGattCharacteristic的 的UUID
      * @param bleGattCallback BleConnCallback
      */
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void processServiceDiscovered(BluetoothGatt gatt, int status, String
             serviceUUID, String txCharacterUuid, String rxCharacterUuid, BleGattCallback bleGattCallback) {
         if (status != BluetoothGatt.GATT_SUCCESS) {
@@ -308,14 +319,14 @@ public class CentralImpl implements CentralCore {
             return;
         }
         BluetoothGattService service = gatt.getService(UUID.fromString(serviceUUID));
-        LogUtils.e(TAG, "--------------------> processServiceDiscovered  (service == null):" + (service == null));
+        Logger.e(TAG, "--------------------> processServiceDiscovered  (service == null):" + (service == null));
         if (service == null) {
             bleGattCallback.onConnFailure(BleErrorCode.CONN_NO_FOUND_DEVICE_UUID_SERVICE_ERROR, EnumErrorCode.getDesc(BleErrorCode.CONN_NO_FOUND_DEVICE_UUID_SERVICE_ERROR));
             onDisAndClear(gatt, this.characteristic);
             return;
         }
         BluetoothGattCharacteristic txCharacteristic = service.getCharacteristic(UUID.fromString(txCharacterUuid));
-        LogUtils.e(TAG, "--------------------> processServiceDiscovered  (txCharacteristic == null) :" + (txCharacteristic == null));
+        Logger.e(TAG, "--------------------> processServiceDiscovered  (txCharacteristic == null) :" + (txCharacteristic == null));
         if (txCharacteristic == null) {
             bleGattCallback.onConnFailure(BleErrorCode.CONN_DEVICE_CHARACTERISTIC_ERROR, EnumErrorCode.getDesc(BleErrorCode.CONN_DEVICE_CHARACTERISTIC_ERROR));
             onDisAndClear(gatt, null);
@@ -325,14 +336,14 @@ public class CentralImpl implements CentralCore {
         gatt.setCharacteristicNotification(txCharacteristic, true);
 
         BluetoothGattCharacteristic rxCharacteristic = service.getCharacteristic(UUID.fromString(rxCharacterUuid));
-        LogUtils.e(TAG, "--------------------> processServiceDiscovered  (rxCharacterUuid == null) :" + (rxCharacterUuid == null));
+        Logger.e(TAG, "--------------------> processServiceDiscovered  (rxCharacterUuid == null) :" + (rxCharacterUuid == null));
         if (rxCharacteristic == null) {
             //bleGattCallback.onConnFailure(BleErrorCode.CONN_DEVICE_CHARACTERISTIC_ERROR, EnumErrorCode.getDesc(BleErrorCode.CONN_DEVICE_CHARACTERISTIC_ERROR));
             // onDisAndClear(gatt, null);
             // return;
         } else {
             boolean notification = gatt.setCharacteristicNotification(rxCharacteristic, true);
-            LogUtils.e(TAG, "--------------------> processServiceDiscovered   :" + notification);
+            Logger.e(TAG, "--------------------> processServiceDiscovered   :" + notification);
         }
 
         bleGattCallback.onConnSuccess(gatt, txCharacteristic);
@@ -341,6 +352,7 @@ public class CentralImpl implements CentralCore {
     }
 
     //MTU（Maximum Transmission Unit），最大传输单元
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     private boolean requestMtu(BluetoothGatt gatt) {
         if (gatt != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // 25 *6 +3 =153
@@ -350,6 +362,7 @@ public class CentralImpl implements CentralCore {
     }
 
     //低延时 、提高数据传递速率
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     private boolean requestHighPriority(BluetoothGatt gatt) {
         if (gatt != null) {
             return requestConnectionPriority(gatt, BluetoothGatt.CONNECTION_PRIORITY_HIGH);
@@ -358,6 +371,7 @@ public class CentralImpl implements CentralCore {
     }
 
     //系统默认为CONNECTION_PRIORITY_BALANCED
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     private boolean requestConnectionPriority(BluetoothGatt gatt, int connectionPriority) {
         if (connectionPriority < BluetoothGatt.CONNECTION_PRIORITY_BALANCED
                 || connectionPriority > BluetoothGatt.CONNECTION_PRIORITY_LOW_POWER) {
@@ -371,6 +385,7 @@ public class CentralImpl implements CentralCore {
      * <p>
      * 检测数据包是否全部发送完成，如果没有继续发送，否则置空；
      */
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void processCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic
             characteristic, int status, BleGattCallback bleGattCallback) {
         if (status != BluetoothGatt.GATT_SUCCESS) {
@@ -378,7 +393,7 @@ public class CentralImpl implements CentralCore {
             onDisAndClear(gatt, characteristic);
             return;
         }
-        LogUtils.e(TAG, "-------------------------> count  :"+count);
+        Logger.e(TAG, "-------------------------> count  :"+count);
         count++;
         if (count < this.sendPackage.length) {
             //  String hexString = ByteHexUtils.INSTANCE.byteArrayToHexString(msgPackage[count]);
@@ -402,11 +417,11 @@ public class CentralImpl implements CentralCore {
      */
     public void processCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic
             characteristic) {
-        LogUtils.e(TAG, "处理返回消息数据 " + characteristic.getUuid().toString());
+        Logger.e(TAG, "处理返回消息数据 " + characteristic.getUuid().toString());
         if (this.bleGattCallback != null) {
             BluetoothGattService gattService = gatt.getService(UUID.fromString(config.getServiceUuid()));
             if (gattService != null) {
-                LogUtils.e(TAG,"-----------------------------> 处理返回消息数据  gatt.getService");
+                Logger.e(TAG,"-----------------------------> 处理返回消息数据  gatt.getService");
                 this.bleGattCallback.onBleServerResp(gatt, gattService.getCharacteristic(UUID.fromString(config.getTxCharacterUuid())), characteristic.getValue(), maxMtu);
             } else {
                 this.bleGattCallback.onBleServerResp(gatt, characteristic, characteristic.getValue(), maxMtu);
@@ -421,14 +436,15 @@ public class CentralImpl implements CentralCore {
     private void threadWait(final long millis) {
         synchronized (mLock) {
             try {
-                LogUtils.i(TAG, "thread blocking " + millis + " milliseconds ");
+                Logger.i(TAG, "thread blocking " + millis + " milliseconds ");
                 mLock.wait(millis);
             } catch (final InterruptedException e) {
-                LogUtils.e(TAG, "Sleeping interrupted " + e.getMessage());
+                Logger.e(TAG, "Sleeping interrupted " + e.getMessage());
             }
         }
     }
 
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     private void onDisAndClear(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         if (gatt != null) {
             gatt.disconnect();

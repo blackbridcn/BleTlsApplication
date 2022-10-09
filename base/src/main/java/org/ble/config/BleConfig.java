@@ -17,7 +17,7 @@ public final class BleConfig {
 
     String rxCharacterUuid;
     String txCharacterUuid;
-
+    public static int BLE_RSSI_THRESHOLD_VALUE = -70;
     /**
      * valid Bluetooth names are a maximum of 248 bytes using UTF-8 encoding,
      * although many remote devices can only display the first 40 characters,
@@ -41,8 +41,8 @@ public final class BleConfig {
         this.scanTimeout = builder.scanTimeout;
         this.serviceUuid = builder.serviceUuid;
         this.txCharacterUuid = builder.txCharacterUuid;
-        this.rxCharacterUuid=builder.rxCharacterUuid;
-        this.peripheral =builder. peripheral;
+        this.rxCharacterUuid = builder.rxCharacterUuid;
+        this.peripheral = builder.peripheral;
     }
 
     public long getScanTimeout() {
@@ -101,7 +101,7 @@ public final class BleConfig {
         String txCharacterUuid;
 
         String bleName;
-        boolean newApi =true;
+        boolean newApi = true;
         boolean peripheral;
 
         Builder(long scanTimeout) {
@@ -128,7 +128,7 @@ public final class BleConfig {
             return this;
         }
 
-        public Builder txCharacterUuid(String txCharacterUuid){
+        public Builder txCharacterUuid(String txCharacterUuid) {
             this.txCharacterUuid = txCharacterUuid;
             return this;
         }
@@ -149,7 +149,7 @@ public final class BleConfig {
         }
 
         public BleConfig build() {
-            if (ObjectHelp.checkNotNullEmpty(serviceUuid, rxCharacterUuid,txCharacterUuid))
+            if (ObjectHelp.checkNotNullEmpty(serviceUuid, rxCharacterUuid, txCharacterUuid))
                 return new BleConfig(this);
             else throw new BleException(" must set serviceUUID and characterUUID value !");
         }

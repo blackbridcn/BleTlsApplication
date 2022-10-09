@@ -6,18 +6,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.collection.ArrayMap
 import androidx.collection.arrayMapOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.train.central.databinding.FragmentHomeBinding
+import com.train.central.databinding.ModuleCentralMainHomeFragmentBinding
+
 import org.ble.BleClient
 import org.ble.callback.BleGattCallback
 import org.ble.scan.*
-import org.e.ble.utils.HexStrUtils
+import org.ble.utils.HexStrUtils
 import org.recyclerview.IndexOutOfBoundsExcLinearLayoutManager
 import org.utlis.LogUtils
 import java.util.*
@@ -25,35 +25,29 @@ import java.util.*
 class HomeFragment : Fragment(), AdapterListener  {
 
     private lateinit var homeViewModel: HomeViewModel
-    private var _binding: FragmentHomeBinding? = null
-    private val databind get() = _binding!!
+
+    lateinit var  databind : ModuleCentralMainHomeFragmentBinding
 
     private val TAG = HomeFragment::javaClass.name
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = _binding.root
+        databind =ModuleCentralMainHomeFragmentBinding.inflate(inflater)
 
-        val btnHome: Button = binding.btnHome
+        homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+
         homeViewModel.text.observe(viewLifecycleOwner, Observer {
             //textView.text = it
         })
-        binding.btnHome.setOnClickListener {
-           // BleClient.getInstance().startAdvertising()
-        }
-        return root
+        initWidget()
+        return databind.root
     }
+
+
     lateinit var listAdapter: ScanAdapter
 
     fun initWidget() {
@@ -129,10 +123,6 @@ class HomeFragment : Fragment(), AdapterListener  {
         scanner.stopScan(scanCallback)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 
     override fun onUnlockTask(unlockView: View, item: ScanResult) {
         var scanner: BluetoothScannerProvider = BluetoothScannerProvider.getScanner()
@@ -182,16 +172,12 @@ class HomeFragment : Fragment(), AdapterListener  {
                 "--------------------> onBleServerResp :" + HexStrUtils.byteArrayToHexString(value)
             )
             //   receiveBuildPackage(gatt, characteristic, value)
-            BleClient.getInstance().sendMsgToGattServerDevice(
+          /*  BleClient.getInstance().sendMsgToGattServerDevice(
                 gatt, characteristic,
-                BleDataUtils.buildUnlockMsg(Date())
-            )
+               BleDataUtils.buildUnlockMsg(Date())
+            )*/
             ;
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 }

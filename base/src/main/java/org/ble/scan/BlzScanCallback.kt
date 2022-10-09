@@ -1,7 +1,7 @@
 package org.ble.scan
 
 import android.bluetooth.BluetoothDevice
-import com.hidglobal.duality.relay.contetant.Constants
+import org.ble.config.BleConfig
 
 
 /**
@@ -35,7 +35,7 @@ public abstract class BlzScanCallback {
     }
 
     open fun checkRangeValid(rssi: Int): Boolean {
-        if(rssi> Constants.BLE_RSSI_THRESHOLD_VALUE){
+        if(rssi> BleConfig.BLE_RSSI_THRESHOLD_VALUE){
             return true
         }else{
             return false

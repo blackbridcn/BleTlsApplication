@@ -7,7 +7,7 @@ import android.os.Build;
 import androidx.annotation.RawRes;
 
 import org.bouncycastle.jce.provider.JCEECPublicKey;
-import org.e.ble.utils.HexStrUtils;
+import org.ble.utils.HexStrUtils;
 import org.utils.LogUtils;
 
 import java.io.IOException;
@@ -76,7 +76,7 @@ public class X509CertificateUtils {
 
             byte[] signature = oCert.getSignature();
             if(signature!=null){
-                System.out.println("signature:" +  HexStrUtils.Companion.byteArrayToHexString(signature));
+                System.out.println("signature:" +  HexStrUtils.INSTANCE.byteArrayToHexString(signature));
             }
 
             PublicKey publicKey=oCert.getPublicKey();
@@ -141,7 +141,7 @@ public class X509CertificateUtils {
 
             byte[] signature = oCert.getSignature();
             if(signature!=null){
-                System.out.println("signature:" +  HexStrUtils.Companion.byteArrayToHexString(signature));
+                System.out.println("signature:" +  HexStrUtils.INSTANCE.byteArrayToHexString(signature));
             }
 
             PublicKey publicKey=oCert.getPublicKey();
@@ -224,7 +224,7 @@ public class X509CertificateUtils {
 
             byte[] signature = oCert.getSignature();
             if(signature!=null){
-                System.out.println("signature:" +  HexStrUtils.Companion.byteArrayToHexString(signature));
+                System.out.println("signature:" +  HexStrUtils.INSTANCE.byteArrayToHexString(signature));
             }
 
             PublicKey publicKey=oCert.getPublicKey();

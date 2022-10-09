@@ -6,7 +6,8 @@ import android.util.SparseArray;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.utils.LogUtils;
+
+import org.ble.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -173,7 +174,7 @@ public final class ScanRecord {
             return new ScanRecord(serviceUuids, manufacturerData, serviceData,
                     advertiseFlag, txPowerLevel, localName, scanRecord);
         } catch (final Exception e) {
-            LogUtils.e(TAG, "unable to parse scan record: " + Arrays.toString(scanRecord));
+            Logger.e(TAG, "unable to parse scan record: " + Arrays.toString(scanRecord));
             // As the record is invalid, ignore all the parsed results for this packet
             // and return an empty record with raw scanRecord bytes in results
             return new ScanRecord(null, null, null,

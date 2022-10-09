@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 
 
-import org.utils.LogUtils;
+import org.ble.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -147,7 +147,7 @@ public class ScannerService extends Service {
             scannerCompat.startScanInternal(filters, settings, executor, handler);
 
         } catch (final Exception e) {
-            LogUtils.w(TAG, "Starting scanning failed"+ e);
+            Logger.w(TAG, "Starting scanning failed"+ e);
         }
     }
 
@@ -166,7 +166,7 @@ public class ScannerService extends Service {
             final BluetoothScannerProvider scannerCompat = BluetoothScannerProvider.getScanner();
             scannerCompat.stopScan(callback);
         } catch (final Exception e) {
-            LogUtils.w(TAG, "Stopping scanning failed"+e);
+            Logger.w(TAG, "Stopping scanning failed"+e);
         }
 
         if (shouldStop)

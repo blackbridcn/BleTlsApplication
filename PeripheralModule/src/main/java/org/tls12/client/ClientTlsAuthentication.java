@@ -1,8 +1,8 @@
 package org.tls12.client;
 
 
-import com.hidglobal.duality.testapplication.application.PeripheralApplication;
-import com.hidglobal.duality.testapplication.R;
+import com.train.peripheral.R;
+import com.train.peripheral.application.PeripheralApplication;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.Certificate;

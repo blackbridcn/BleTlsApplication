@@ -8,8 +8,8 @@ import java.lang.StringBuilder
  * Description:
  * Remark:
  */
-class HexStrUtils {
-    companion object {
+object HexStrUtils {
+
         fun hexToByteArray(src: String?): ByteArray? {
             if (src == null || src.length == 0) {
                 return null
@@ -51,5 +51,4 @@ class HexStrUtils {
             return builder.toString().uppercase()
         }
 
-    }
 }

@@ -2,7 +2,8 @@ package org.ble.utils;
 
 import android.bluetooth.BluetoothGatt;
 
-import org.utils.ByteHexUtils;
+
+import org.utlis.ByteHexUtils;
 
 import java.lang.reflect.Method;
 

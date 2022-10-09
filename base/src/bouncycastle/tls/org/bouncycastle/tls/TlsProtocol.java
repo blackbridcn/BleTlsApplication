@@ -3,7 +3,8 @@ package org.bouncycastle.tls;
 import org.bouncycastle.tls.crypto.TlsSecret;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.Integers;
-import org.e.ble.utils.HexStrUtils;
+import org.ble.utils.HexStrUtils;
+import org.utlis.ByteHexUtils;
 import org.utlis.LogUtils;
 
 
@@ -1452,14 +1453,14 @@ public abstract class TlsProtocol
         }
 
 
-        LogUtils.e(TAG, "sendFinishedMessage verify_data : " + HexStrUtils.Companion.byteArrayToHexString(verify_data));
+        LogUtils.e(TAG, "sendFinishedMessage verify_data : " + ByteHexUtils.INSTANCE.byteArrayToHexString(verify_data));
 
         securityParameters.localVerifyData = verify_data;
 
         if (!resumedSession || securityParameters.isExtendedMasterSecret()) {
             if (null == securityParameters.getPeerVerifyData()) {
 
-                LogUtils.e(TAG, "sendFinishedMessage tlsUnique : " + HexStrUtils.Companion.byteArrayToHexString(verify_data));
+                LogUtils.e(TAG, "sendFinishedMessage tlsUnique : " + ByteHexUtils.INSTANCE.byteArrayToHexString(verify_data));
                 securityParameters.tlsUnique = verify_data;
             }
         }

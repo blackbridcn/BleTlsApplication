@@ -1,8 +1,9 @@
 package org.tls12.server;
 
 
-import com.hidglobal.duality.testapplication.application.PeripheralApplication;
-import com.hidglobal.duality.testapplication.R;
+import com.train.peripheral.R;
+import com.train.peripheral.application.PeripheralApplication;
+
 
 import org.bouncycastle.tls.Certificate;
 import org.bouncycastle.tls.CertificateRequest;

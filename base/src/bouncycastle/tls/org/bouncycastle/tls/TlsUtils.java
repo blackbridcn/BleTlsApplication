@@ -37,8 +37,9 @@ import org.bouncycastle.util.Integers;
 import org.bouncycastle.util.Shorts;
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.util.io.Streams;
-import org.e.ble.utils.HexStrUtils;
+import org.ble.utils.HexStrUtils;
 
+import org.utlis.ByteHexUtils;
 import org.utlis.LogUtils;
 
 import java.io.ByteArrayInputStream;
@@ -1476,7 +1477,7 @@ public class TlsUtils {
 
         byte[] prfHash = getCurrentPRFHash(handshakeHash);
 
-        LogUtils.e("TAG","calculateVerifyData prfHash :"+HexStrUtils.Companion.byteArrayToHexString(prfHash));
+        LogUtils.e("TAG","calculateVerifyData prfHash :"+ ByteHexUtils.INSTANCE.byteArrayToHexString(prfHash));
 
         TlsSecret master_secret = securityParameters.getMasterSecret();
         int verify_data_length = securityParameters.getVerifyDataLength();
@@ -1980,7 +1981,7 @@ public class TlsUtils {
         // NOTE: The implicit copy here is intended (and important)
         byte[] randoms = Arrays.concatenate(sp.getClientRandom(), sp.getServerRandom());
         LogUtils.e("TAG", "------------------------------>\n  sendSignatureInput ClientRandom + ServerRandom :"
-                + HexStrUtils.Companion.byteArrayToHexString(randoms));
+                + ByteHexUtils.INSTANCE.byteArrayToHexString(randoms));
 
         output.write(randoms);
 

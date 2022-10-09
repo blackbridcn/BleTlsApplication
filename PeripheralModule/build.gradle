@@ -10,7 +10,7 @@ android {
     buildToolsVersion '30.0.3'
 
     defaultConfig {
-        applicationId "com.hidglobal.duality.testapplication"
+        applicationId "com.train.peripheral"
         minSdk 27
         targetSdk 33
         versionCode 1
@@ -88,10 +88,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version")
 
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-
-
-    //implementation project(path: ':bouncycastle')
-
 
     def coroutines_version = "1.4.2"
 

@@ -7,11 +7,11 @@
 
         <variable
             name="data"
-            type="com.hidglobal.duality.testapplication.mvi.SampleMviData" />
+            type="com.train.peripheral.mvi.SampleMviData" />
 
         <variable
             name="listener"
-            type="com.hidglobal.duality.testapplication.mvi.AdapterItemClickListener" />
+            type="com.train.peripheral.mvi.AdapterItemClickListener" />
 
 
     </data>
