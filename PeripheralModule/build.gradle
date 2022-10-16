@@ -1,12 +1,12 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
+    id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
-    id 'kotlin-android-extensions'
 }
 
 android {
-    compileSdk 31
+
+    compileSdk 33
     buildToolsVersion '30.0.3'
 
     defaultConfig {
@@ -71,7 +71,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
 
     implementation project(path: ':base')
-    //implementation project(path: ':bouncycastle')
+
 
     def lifecycle_version = "2.4.1"
     def arch_version = "2.1.0"
@@ -86,8 +86,6 @@ dependencies {
 
     // Saved state module for ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version")
-
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     def coroutines_version = "1.4.2"
 

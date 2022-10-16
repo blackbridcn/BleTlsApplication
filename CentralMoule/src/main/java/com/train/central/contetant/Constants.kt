@@ -1,4 +1,4 @@
-package com.train.peripheral.contetant
+package com.train.central.contetant
 
 /**
  * Author: yuzzha

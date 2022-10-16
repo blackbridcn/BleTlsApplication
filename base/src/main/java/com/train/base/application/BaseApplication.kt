@@ -16,11 +16,6 @@ open class BaseApplication : Application() {
         context = this
     }
 
-    override fun onCreate() {
-        super.onCreate()
-
-    }
-
 
     companion object{
         @JvmStatic

@@ -18,6 +18,16 @@
     <string name="ble_write_state_error">发送数据蓝牙状态异常</string>
     <string name="ble_characteristic_error">连接远程蓝牙特征character异常</string>
 
+    <string name="ble_even_timeout_tip">操作失敗(超時)</string>
+
+    <string name="ble_even_build_conn_not_msg_timeout_tip">操作失败(未收到消息),稍后再试</string>
+    <string name="ble_even_no_conn_timeout_tip">操作失败(未链接),再走近点吧！</string>
+
+    <string name="ble_even_exception_tip">操作失败(设备断开),稍后再试</string>
+
     <string name="module_rssi_text">RSSI:%1sdBm</string>
     <string name="title_activity_simple_mvi">SimpleMviActivity</string>
+
+
+
 </resources>
