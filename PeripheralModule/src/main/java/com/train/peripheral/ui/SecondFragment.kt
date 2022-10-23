@@ -18,8 +18,8 @@ import org.bouncycastle.tls.ByteQueue
 import org.bouncycastle.tls.TlsFatalAlert
 import org.bouncycastle.tls.TlsUtils
 import org.ble.utils.HexStrUtils
-import org.tls12.TlsClientUtils
-import org.tls12.TlsServerUtils
+import org.tls.peer.client.TlsClientUtils
+import org.tls.peer.server.TlsServerUtils
 import org.utils.LogUtils
 import java.io.IOException
 
@@ -75,7 +75,7 @@ class SecondFragment : Fragment() {
                 LogUtils.e(TAG, "---------------->result : " + HexStrUtils.byteArrayToHexString(result))
 
 
-                var set = TlsServerUtils.reciver(result)
+                var set = TlsServerUtils.offerInput(result)
                 //LogUtils.e(TAG, "---------------->offerInput : " + HexStrUtils.byteArrayToHexString(set))
 
                 var cleintInput = TlsClientUtils.offerInput(set)
@@ -150,8 +150,6 @@ class SecondFragment : Fragment() {
             hasHead = true
             lastHead ?: let {
                 try {
-                    //var clientKeyExchange = TlsClientUtils.continueHandshake(handshakeQueue)
-
                     LogUtils.e(TAG, "-------------> ")
                 } catch (e: IOException) {
                     LogUtils.e(TAG, "-------------> ${e.message}")

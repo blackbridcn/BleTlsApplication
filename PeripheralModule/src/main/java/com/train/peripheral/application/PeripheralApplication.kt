@@ -25,7 +25,7 @@ class PeripheralApplication : BaseApplication() {
             .serviceUuid(Constants.BASE_SERVICE_UUID)
             .isPeripheral(true)
             .setScanTimeout(4500)
-            .bleName("train_yzz")
+            .bleName("train")
             .build()
         BleClient.initBlutooth(this, config)
     }

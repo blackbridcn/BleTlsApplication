@@ -95,7 +95,7 @@ public class CentralImpl implements CentralCore {
 
         BluetoothGattCharacteristic txCharacteristic;
 
-        if (TextUtils.equals(config.getTxCharacterUuid(), characteristic.getUuid().toString())) {
+        if (TextUtils.equals(config.getRxCharacterUuid(), characteristic.getUuid().toString())) {
             txCharacteristic = characteristic;
         } else {
             BluetoothGattService service = gatt.getService(UUID.fromString(config.getServiceUuid()));
@@ -105,11 +105,13 @@ public class CentralImpl implements CentralCore {
                 return;
             }
             Logger.e(TAG, "-------------------> gatt.getService  ");
-            txCharacteristic = service.getCharacteristic(UUID.fromString(config.getTxCharacterUuid()));
+            txCharacteristic = service.getCharacteristic(UUID.fromString(config.getRxCharacterUuid()));
         }
         txCharacteristic.setValue(sendPackage[index]);
+
         ++index;
-        boolean writeCharacteristic = gatt.writeCharacteristic(characteristic);
+
+        boolean writeCharacteristic = gatt.writeCharacteristic(txCharacteristic);
         Logger.e(TAG, "-------------------->  writeCharacteristic :" + writeCharacteristic);
     }
 

@@ -9,7 +9,7 @@ import org.bouncycastle.tls.TlsServerProtocol;
 import java.io.IOException;
 import java.security.Security;
 
-public class TlsServerUtils {
+public class TlsV3ServerUtils {
 
     static TlsServerProtocol tlsServerProtocol;
     static TlsV3ServerImpl tlsV3ServerImpl;

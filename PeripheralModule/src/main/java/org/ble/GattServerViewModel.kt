@@ -1,39 +1,30 @@
 package org.ble
 
-import android.app.Application
-import android.bluetooth.BluetoothAdapter
+
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseSettings
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.location.LocationManager
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-
-import com.hidglobal.ui.ble.conn.enums.BleCmdEnum
-import com.train.base.application.BaseApplication
 import com.train.peripheral.R
-import com.train.peripheral.message.BleEncryptType
-
-import org.ble.BleClient
 import org.ble.callback.BleGattServerCallback
-
 import org.ble.utils.BleCompat
-
 import org.bouncycastle.tls.ByteQueue
-
+import org.bouncycastle.tls.RecordFormat
+import org.bouncycastle.tls.TlsFatalAlert
+import org.bouncycastle.tls.TlsUtils
 import org.e.ble.utils.HexStrUtils
-
-
+import org.tls.peer.server.TlsServerUtils
+import org.tls.protocol.TlsProtocolData
+import org.tls.utils.ByteUtils
+import org.tls.utils.BytesQueue
 import org.utils.LogUtils
+import java.io.IOException
 
 
 /**
@@ -122,7 +113,8 @@ abstract class GattServerViewModel : ViewModel() {
             super.onClientBleReq(device, characteristic, value, mtu)
             setCurrentDevice(device)
             //TLS消息
-            //readBleTlsData(value, device)
+            //parseMsg(value);
+            readBleTlsData(value,device);
         }
 
         override fun onDisConnBleDevice(centerDevice: BluetoothDevice) {
@@ -139,7 +131,7 @@ abstract class GattServerViewModel : ViewModel() {
     }
 
     var temp: MutableList<Byte>? = null
-    var packSize = 0
+
 
     var fragmentLen = 0
 
@@ -150,15 +142,107 @@ abstract class GattServerViewModel : ViewModel() {
     val FRAGMENT_OFFSET = 5
     var hasHead = true
 
-    private var tlsHandshakeQueue = ByteQueue(0)
+    var hasFragment = false
 
+
+    private var tlsHandshakeQueue = BytesQueue(0)
+    var packSize = 0
+
+    fun parseMsg(source: ByteArray) {
+        var length = source.size
+        if (length > 0) {
+            if (!hasFragment) {
+                if(length>FRAGMENT_OFFSET){
+                    packSize = TlsUtils.readUint16(source, RecordFormat.LENGTH_OFFSET)
+                }
+                tlsHandshakeQueue.addData(source,0,length)
+                hasFragment=true
+            }else{
+                tlsHandshakeQueue.addData(source,0,length)
+            }
+        }
+
+        if(tlsHandshakeQueue.available() ==packSize){
+            TlsServerUtils.offerInput(tlsHandshakeQueue.availableByteArray())
+        }
+    }
+
+    var tlsHead = false
+
+
+    fun readBleTlsData(value: ByteArray, device: BluetoothDevice) {
+        var length = value.size
+        if (length > 0) {
+            var values = value
+            lastHead?.let {
+                length += it.size
+
+                var newValue = ByteArray(length)
+                System.arraycopy(lastHead, 0, newValue, 0, it.size)
+                System.arraycopy(values, 0, newValue, it.size, values.size)
+                values = newValue
+                lastHead = null
+            }
+            var index = 0
+            while (index <= length && (length - index > 0) && hasHead) {
+                if (length - index >= FRAGMENT_OFFSET) {
+                    var bodyLen =
+                        ByteUtils.readUint16(values, index + LENGTH_OFFSET) + FRAGMENT_OFFSET
+                    if (index + bodyLen <= length) {
+                        readTlsPackage(values, index, bodyLen)
+                        index += bodyLen
+                    } else {
+                        hasHead = false
+                        lastHead = ByteArray(length - index)
+                        System.arraycopy(values, index, lastHead, 0, length - index);
+                    }
+                } else {
+                    hasHead = false
+                    lastHead = ByteArray(length - index)
+                    System.arraycopy(values, index, lastHead, 0, length - index);
+                }
+            }
+            hasHead = true
+            lastHead ?: let {
+                try {
+                    tlsHandshakeQueue.removeData(tlsHandshakeQueue.available())
+                    tlsFinished = true
+                    startFunctionEvent(device)
+                    /// var clientKeyExchange = TlsClientUtils.continueHandshake(handshakeQueue)
+                    // sendMsgToCentral(clientKeyExchange)
+                } catch (e: IOException) {
+                    if (e is TlsFatalAlert) {
+                        var alert = Integer.toHexString(e.alertDescription.toInt())
+                        while (alert.length < 4) {
+                            alert = "0${alert}"
+                        }
+                        //var tlsFail = BleDataUtils.buildTlsErrCommand(alert)
+                        //  startTimeOutTask()
+                        //  sendMsgToCentral(tlsFail)
+                    } else {
+                        //var tlsFail = BleDataUtils.buildTlsErrCommand("0015")
+                        //startTimeOutTask()
+                        // sendMsgToCentral(tlsFail)
+                    }
+                    releaseGattServer()
+                    _errMsg.value = e.message
+                }
+            }
+        }
+    }
 
     fun readTlsPackage(source: ByteArray, index: Int, bodyLen: Int) {
         if (tlsHandshakeQueue.available() == 0) {
             var dest = ByteArray(bodyLen)
             System.arraycopy(source, index, dest, 0, bodyLen)
-
+           var serverHello= TlsServerUtils.offerInput(dest)
             LogUtils.e(TAG, "${HexStrUtils.byteArrayToHexString(dest)}")
+            if(serverHello!=null){
+                sendMsgToCentral(serverHello);
+                var protocolData = TlsProtocolData.initData(serverHello);
+                org.utlis.LogUtils.e("-----------> serverHello :${protocolData}")
+            }
+
 
         }
         tlsHandshakeQueue.addData(source, index, bodyLen)
@@ -188,10 +272,10 @@ abstract class GattServerViewModel : ViewModel() {
         super.onCleared()
         try {
             //蓝牙状态广播
-           // BaseApplication.getInstance()?.unregisterReceiver(bluetoothStateBroadcastReceiver)
+            // BaseApplication.getInstance()?.unregisterReceiver(bluetoothStateBroadcastReceiver)
             if (BleCompat.isMarshmallowOrAbove()) {
                 //定位功能开关  Android 6.0 Marshmallow overview.
-              //  LocationReceiver.instance.removeLocationChangeListener(locationChangerListener)
+                //  LocationReceiver.instance.removeLocationChangeListener(locationChangerListener)
             }
         } catch (e: IllegalArgumentException) {
 
@@ -202,7 +286,7 @@ abstract class GattServerViewModel : ViewModel() {
     fun sendMsgToCentral(respVo: ByteArray) {
 
         BleClient.getInstance().sendMsgToGattClient(respVo)
-        //LogUtils.e(TAG, "sendMsgToRelay  HEX:" + HexByteUtils.bytesToHexString(respVo))
+        LogUtils.e(TAG, "${HexStrUtils.byteArrayToHexString(respVo)}")
     }
 
     var advertiseCallback = object : AdvertiseCallback() {
@@ -282,7 +366,6 @@ abstract class GattServerViewModel : ViewModel() {
     fun isEnabled(): Boolean {
         return BleClient.getInstance().canBlz()
     }
-
 
 
 }

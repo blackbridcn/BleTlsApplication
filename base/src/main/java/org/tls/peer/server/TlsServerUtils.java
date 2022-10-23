@@ -1,11 +1,12 @@
-package org.tls12;
+package org.tls.peer.server;
 
 
+import org.ble.utils.HexStrUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tls.TlsServerProtocol;
-import org.tls12.selector.TlsCryptoSelector;
-import org.tls12.server.TlsV2Server;
-import org.utils.LogUtils;
+import org.tls.selector.TlsCryptoSelector;
+import org.utlis.LogUtils;
+
 
 import java.io.IOException;
 import java.security.Security;
@@ -18,23 +19,33 @@ import java.security.Security;
  * https://blog.csdn.net/qq_38975553/article/details/112987893
  */
 public class TlsServerUtils {
-
-    static TlsV2Server tlsV2Server;
+   static String TAG=TlsServerUtils.class.getSimpleName();
+    static TlsServer tlsV2Server;
     static TlsServerProtocol tlsServerProtocol;
+
+    static {
+        //握手随机数
+
+        //var rngProvider = new System.Security.Cryptography.RNGCryptoServiceProvider();
+        //rngProvider.GetBytes(random);
+        //SHA256PRNG 表示 采用SHA256算法 + PRNG生成伪随机数
+        //SecureRandom secureRandom = SecureRandom.getInstance("SHA256PRNG");
+
+        try {
+            Security.addProvider(new BouncyCastleProvider());
+            tlsServerProtocol = new TlsServerProtocol();
+            tlsV2Server = new TlsServer(TlsCryptoSelector.getCrypto());
+            tlsServerProtocol.accept(tlsV2Server);
+            LogUtils.e(TAG," TlsServerUtils static {}  ");
+        } catch (IOException e) {
+            e.printStackTrace();
+            LogUtils.e(TAG," static {}  IOException :"+e.getMessage());
+        }
+    }
 
     public static byte[] receiverClientHello(byte[] hello) {
         try {
-            //握手随机数
 
-            Security.addProvider(new BouncyCastleProvider());
-            //var rngProvider = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            //rngProvider.GetBytes(random);
-            //SHA256PRNG 表示 采用SHA256算法 + PRNG生成伪随机数
-            //SecureRandom secureRandom = SecureRandom.getInstance("SHA256PRNG");
-
-            tlsServerProtocol = new TlsServerProtocol();
-            tlsV2Server = new TlsV2Server(TlsCryptoSelector.getCrypto());
-            tlsServerProtocol.accept(tlsV2Server);
             tlsServerProtocol.offerInput(hello);
             int availableOutputBytes = tlsServerProtocol.getAvailableOutputBytes();
             if (availableOutputBytes > 0) {
@@ -46,24 +57,25 @@ public class TlsServerUtils {
 
         } catch (IOException e) {
             e.printStackTrace();
+            LogUtils.e(TAG," receiverClientHello  IOException :"+e.getMessage());
         }
-
         return null;
     }
 
-    public static byte[] reciver(byte[] clientMsg) throws IOException {
-        /*try {*/
+    public static byte[] offerInput(byte[] clientMsg) throws IOException {
+        try {
+            LogUtils.e("TAG", "-------------------------> offerInput value: " + HexStrUtils.INSTANCE.byteArrayToHexString(clientMsg));
             tlsServerProtocol.offerInput(clientMsg);
             int availableOutputBytes = tlsServerProtocol.getAvailableOutputBytes();
+            LogUtils.e("TAG", "-------------------------> availableOutputBytes :"+ availableOutputBytes);
             if (availableOutputBytes > 0) {
                 byte[] data = new byte[availableOutputBytes];
                 tlsServerProtocol.readOutput(data, 0, availableOutputBytes);
-               // LogUtils.e("TAG", "-------------------------> availableOutputBytes value: " + ByteHexUtils.INSTANCE.byteArrayToHexString(data));
                 return data;
             }
-       /* } catch (IOException e) {
-            LogUtils.e("TAG", "--------> " + e.getMessage());
-        }*/
+       } catch (IOException e) {
+            LogUtils.e("TAG", "-------->offerInput IOException: " + e.getMessage());
+        }
         return null;
 
     }

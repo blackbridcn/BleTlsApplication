@@ -3921,9 +3921,19 @@ public class TlsUtils {
     }
 
     public static boolean isSupportedCipherSuite(TlsCrypto crypto, int cipherSuite) {
-        return isSupportedKeyExchange(crypto, getKeyExchangeAlgorithm(cipherSuite))
-                && crypto.hasEncryptionAlgorithm(getEncryptionAlgorithm(cipherSuite))
-                && crypto.hasMacAlgorithm(getMACAlgorithm(cipherSuite));
+
+        return isSupportedKeyExchange(crypto,
+                //密钥交换算法
+                getKeyExchangeAlgorithm(cipherSuite)
+        )
+
+                && crypto.hasEncryptionAlgorithm(
+                        //加密算法 握手结束后，对称加密算法
+                        getEncryptionAlgorithm(cipherSuite))
+
+                && crypto.hasMacAlgorithm(
+                        //摘要算法
+                        getMACAlgorithm(cipherSuite));
     }
 
     public static boolean isSupportedKeyExchange(TlsCrypto crypto, int keyExchangeAlgorithm) {

@@ -1,12 +1,11 @@
-package org.tls12;
+package org.tls.peer.client;
 
+import org.ble.utils.HexStrUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tls.ByteQueue;
 import org.bouncycastle.tls.TlsClientProtocol;
-import org.ble.utils.HexStrUtils;
-import org.tls12.client.TlsV2Client;
-import org.tls12.selector.TlsCryptoSelector;
-import org.utils.LogUtils;
+import org.tls.selector.TlsCryptoSelector;
+import org.utlis.LogUtils;
 
 import java.io.IOException;
 import java.security.Security;
@@ -22,8 +21,6 @@ import java.security.Security;
  * <p>
  * https://github.com/RUB-NDS/TlsPraktikumServerOld2018
  * <p>
- * https://github.com/openjsse/openjsse
- * <p>
  * https://www.jianshu.com/p/7c9506612858
  * <p>
  * Remark:
@@ -34,7 +31,7 @@ public class TlsClientUtils {
 
     private static TlsClientProtocol tlsClientProtocol;
     //
-    private static TlsV2Client tlsV2Client;
+    private static TlsClient tlsV2Client;
 
     //
     public static byte[] startHandshake() {
@@ -45,7 +42,7 @@ public class TlsClientUtils {
             tlsClientProtocol = new TlsClientProtocol();
             // 公钥基础设施 Public Key Infrastructure 简称PKI,
             // PkiTlsClient 对象是对 TLS  handshake协议中的密钥PKI生成与处理类　
-            tlsV2Client = new TlsV2Client(TlsCryptoSelector.getCrypto());
+            tlsV2Client = new TlsClient(TlsCryptoSelector.getCrypto());
             tlsClientProtocol.connect(tlsV2Client);
 
 

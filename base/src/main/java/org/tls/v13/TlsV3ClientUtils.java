@@ -12,9 +12,9 @@ import java.security.Security;
 import java.security.SecureRandom;
 
 
-public class TlsClientUtils {
+public class TlsV3ClientUtils {
 
-    private static String TAG = TlsClientUtils.class.getSimpleName();
+    private static String TAG = TlsV3ClientUtils.class.getSimpleName();
 
     private static TlsClientProtocol tlsClientProtocol;
 

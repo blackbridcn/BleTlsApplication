@@ -97,6 +97,7 @@ public class BleCoreImpl implements BleCore, BluetoothAdapter.LeScanCallback {
         return BleManagerHolder.Instance;
     }
 
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void init(Context mContext, BleConfig config) {
         assert mContext != null;
         this.mContext = mContext.getApplicationContext();

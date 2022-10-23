@@ -19,14 +19,16 @@ import org.ble.callback.BleGattCallback
 import org.ble.scan.*
 import org.ble.utils.HexStrUtils
 import org.recyclerview.IndexOutOfBoundsExcLinearLayoutManager
+import org.tls.peer.client.TlsClientUtils
+import org.tls.protocol.TlsProtocolData
 import org.utlis.LogUtils
 import java.util.*
 
-class HomeFragment : Fragment(), AdapterListener  {
+class HomeFragment : Fragment(), AdapterListener {
 
     private lateinit var homeViewModel: HomeViewModel
 
-    lateinit var  databind : ModuleCentralMainHomeFragmentBinding
+    lateinit var databind: ModuleCentralMainHomeFragmentBinding
 
     private val TAG = HomeFragment::javaClass.name
 
@@ -36,7 +38,7 @@ class HomeFragment : Fragment(), AdapterListener  {
         savedInstanceState: Bundle?
     ): View? {
 
-        databind =ModuleCentralMainHomeFragmentBinding.inflate(inflater)
+        databind = ModuleCentralMainHomeFragmentBinding.inflate(inflater)
 
         homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
@@ -72,9 +74,10 @@ class HomeFragment : Fragment(), AdapterListener  {
         stopScanTask()
     }
 
-    var tlsClientDeviceName = "duality"
+    var tlsClientDeviceName = "train"
 
     private fun startScanTask() {
+
         var scanner: BluetoothScannerProvider = BluetoothScannerProvider.getScanner()
 
         val filter = ScanFilter.Builder()
@@ -142,22 +145,21 @@ class HomeFragment : Fragment(), AdapterListener  {
             characteristic: BluetoothGattCharacteristic?
         ) {
             super.onConnSuccess(gatt, characteristic)
-            LogUtils.e(TAG, "--------------------> onConnSuccess :")
+
         }
 
         override fun startSendMsg(
             gatt: BluetoothGatt,
             characteristic: BluetoothGattCharacteristic
         ) {
-            LogUtils.e(TAG, "--------------------> startSendMsg :")
-
+            LogUtils.e(TAG, "--------------------> startSendMsg: "+characteristic.uuid.toString())
             //blzGattCallback
-            //7E1A08000801431911122106CD2A
+            var startHakes = TlsClientUtils.startHandshake()
+            BleClient.getInstance().sendMsgToGattServerDevice(gatt, characteristic, startHakes)
 
-            BleClient.getInstance().sendMsgToGattServerDevice(
-                gatt, characteristic,
-                HexStrUtils.hexToByteArray("7E1A08000801431911122106CD2A")
-            )
+            var protocolData = TlsProtocolData.initData(startHakes);
+            LogUtils.e("-----------> startHakes :${protocolData}")
+
         }
 
         override fun onBleServerResp(
@@ -167,16 +169,13 @@ class HomeFragment : Fragment(), AdapterListener  {
             mtu: Int
         ) {
             super.onBleServerResp(gatt, characteristic, value, mtu)
+            LogUtils.e(TAG, "--------------------> onBleServerResp ")
             LogUtils.e(
                 TAG,
                 "--------------------> onBleServerResp :" + HexStrUtils.byteArrayToHexString(value)
             )
             //   receiveBuildPackage(gatt, characteristic, value)
-          /*  BleClient.getInstance().sendMsgToGattServerDevice(
-                gatt, characteristic,
-               BleDataUtils.buildUnlockMsg(Date())
-            )*/
-            ;
+
         }
     }
 
