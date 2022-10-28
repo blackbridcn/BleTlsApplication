@@ -224,7 +224,6 @@ public class CentralImpl implements CentralCore {
         @Override
         @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
         public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
-            Logger.e(TAG, "--------------------> onServicesDiscovered  status:" + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
 
                 processServiceDiscovered(gatt, status,
@@ -419,11 +418,9 @@ public class CentralImpl implements CentralCore {
      */
     public void processCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic
             characteristic) {
-        Logger.e(TAG, "处理返回消息数据 " + characteristic.getUuid().toString());
         if (this.bleGattCallback != null) {
             BluetoothGattService gattService = gatt.getService(UUID.fromString(config.getServiceUuid()));
             if (gattService != null) {
-                Logger.e(TAG,"-----------------------------> 处理返回消息数据  gatt.getService");
                 this.bleGattCallback.onBleServerResp(gatt, gattService.getCharacteristic(UUID.fromString(config.getTxCharacterUuid())), characteristic.getValue(), maxMtu);
             } else {
                 this.bleGattCallback.onBleServerResp(gatt, characteristic, characteristic.getValue(), maxMtu);
