@@ -336,7 +336,10 @@ class HomeFragment : Fragment(), AdapterListener {
         characteristic: BluetoothGattCharacteristic,
     ) {
 
-        LogUtils.e(TAG, "------------->> parseMsg : ${org.e.ble.utils.HexStrUtils.byteArrayToHexString(msg)}")
+        LogUtils.e(
+            TAG,
+            "------------->> parseMsg : ${org.e.ble.utils.HexStrUtils.byteArrayToHexString(msg)}"
+        )
         var source = checkCacheHeader(msg)
         var length = source.size
         if (length > 0) {
@@ -345,8 +348,15 @@ class HomeFragment : Fragment(), AdapterListener {
                 //source 必须包括完整的 length（表示数据包长度的字节位）数据位，
                 // TLV（Type-Length-Value）中至少要包含完整T（Type）V（Length）数据；
                 if (length > FRAGMENT_OFFSET) {
-                    packSize = TlsUtils.readUint16(source, RecordFormat.LENGTH_OFFSET
+                    packSize = TlsUtils.readUint16(
+                        source, RecordFormat.LENGTH_OFFSET
                     ) + RecordFormat.FRAGMENT_OFFSET
+                    LogUtils.e(
+                        TAG,
+                        "----->> parseMsg packSize : ${
+                            org.e.ble.utils.HexStrUtils.byteArrayToHexString(source)
+                        }"
+                    )
                     packHeader = true
                     buildPackageValue(source, length, gatt, characteristic)
                 } else {
@@ -361,8 +371,6 @@ class HomeFragment : Fragment(), AdapterListener {
         }
 
     }
-
-
 
 
     private fun buildPackageValue(
@@ -384,7 +392,8 @@ class HomeFragment : Fragment(), AdapterListener {
 
             var cacheLast = ByteArray(packSize);
             var size = packageCacheQueue.available();
-            packageCacheQueue.read(cacheLast, size - packSize, packSize, 0);
+
+            packageCacheQueue.read(cacheLast, 0, packSize, size - packSize);
 
             LogUtils.e(TAG, "${org.e.ble.utils.HexStrUtils.byteArrayToHexString(cacheLast)}")
 
@@ -414,10 +423,19 @@ class HomeFragment : Fragment(), AdapterListener {
             LogUtils.e(TAG, "------------->> buildPackageValue lastCount: ")
             initPackageState()
 
-            //剩下的数据（ lastCount～ length ） 新的数据包数据，直接交给下一帧去处理，Length数据位， 拼接到下一帧数据，继续解析
-            cacheHeader = ByteArray(length - lastCount);
-            cacheHeader?.let { System.arraycopy(source, lastCount, it, 0, length - lastCount) };
+            if (length - lastCount >= RecordFormat.FRAGMENT_OFFSET) {
+            // 如果剩下数据长度超过了 TLV中L所需的长度就必须需要直接递归处理，
+            // 因为如果最后这个包数据刚好是V为空（TLV中的Value）的数据包package，
+            // 即本次RTT的最后通知类数据包再没有数据传输，不递归则永远不会触发对这包数据处理了，不会触发下一步动作了
+                var lastPack = ByteArray(length - lastCount);
+                System.arraycopy(source, lastCount, lastPack, 0, length - lastCount)
+                parseMsg(lastPack,gatt,characteristic)
 
+            }else {
+                //剩下的数据（ lastCount～ length ） 新的数据包数据，直接交给下一帧去处理，Length数据位， 拼接到下一帧数据，继续解析
+                cacheHeader = ByteArray(length - lastCount);
+                System.arraycopy(source, lastCount, cacheHeader, 0, length - lastCount)
+            }
         }
     }
 
