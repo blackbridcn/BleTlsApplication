@@ -543,7 +543,7 @@ public abstract class TlsProtocol
             short type = (short) (header >>> 24);
 
 
-            LogUtils.i(TAG, " HandshakeType :" + HandshakeType.getName(type));
+            LogUtils.e(TAG, " HandshakeType :" + HandshakeType.getName(type));
 
             if (!HandshakeType.isRecognized(type)) {
                 throw new TlsFatalAlert(AlertDescription.unexpected_message,

@@ -15,12 +15,15 @@ import java.security.Security;
  * Author: yuzzha
  * Date: 2021-12-02 15:32
  * Description:
+ * BouncyCastle配置
  * https://www.cnblogs.com/askta0/p/11237822.html#/c/subject/p/11237822.html
  * <p>
+ *     Java bouncycastle API 创建 CSR 和签发证书
  * https://arith.blog.csdn.net/article/details/105322582?spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EOPENSEARCH%7Edefault-9.highlightwordscore&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EOPENSEARCH%7Edefault-9.highlightwordscore
  * <p>
  * https://github.com/RUB-NDS/TlsPraktikumServerOld2018
  * <p>
+ *     Java下使用BouncyCastle制作证书（RSA/ECC/SM2）
  * https://www.jianshu.com/p/7c9506612858
  * <p>
  * Remark:
@@ -36,7 +39,6 @@ public class TlsClientUtils {
     //
     public static byte[] startHandshake() {
         try {
-
             Security.addProvider(new BouncyCastleProvider());
             // TlsClientProtocol 进行tls client 端handshake 协议组装 封装类
             tlsClientProtocol = new TlsClientProtocol();

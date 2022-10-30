@@ -325,6 +325,7 @@ public final class ProtocolVersion
             return false;
         }
         int diffMinorVersion = getMinorVersion() - version.getMinorVersion();
+
         return isDTLS() ? diffMinorVersion < 0 : diffMinorVersion > 0;
     }
 

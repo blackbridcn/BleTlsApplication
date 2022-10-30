@@ -57,28 +57,28 @@ class SecondFragment : Fragment() {
         binding.textviewSecond.setOnClickListener {
 
             backScope.launch {
-                var clientHello = TlsClientUtils.startHandshake()
+              //  var clientHello = TlsClientUtils.startHandshake()
                 //LogUtils.e(TAG, "---------------->clientHello : " + HexStrUtils.byteArrayToHexString(clientHello))
 
                // var data = TlsProtocolData.initData(clientHello)
                 //LogUtils.e(TAG,"${data}")
 
-                var serverHello = TlsServerUtils.receiverClientHello(clientHello)
+              //  var serverHello = TlsServerUtils.receiverClientHello(clientHello)
 
-               LogUtils.e(TAG, "---------------->serverHello : " + HexStrUtils.byteArrayToHexString(serverHello))
+             //  LogUtils.e(TAG, "---------------->serverHello : " + HexStrUtils.byteArrayToHexString(serverHello))
 
                 //client_key_exchange
                 //change_cipher_spec
 
-                var result = TlsClientUtils.continueHandshake(serverHello)
+             //   var result = TlsClientUtils.continueHandshake(serverHello)
 
-                LogUtils.e(TAG, "---------------->result : " + HexStrUtils.byteArrayToHexString(result))
+              //  LogUtils.e(TAG, "---------------->result : " + HexStrUtils.byteArrayToHexString(result))
 
 
-                var set = TlsServerUtils.offerInput(result)
+              //  var set = TlsServerUtils.offerInput(result)
                 //LogUtils.e(TAG, "---------------->offerInput : " + HexStrUtils.byteArrayToHexString(set))
 
-                var cleintInput = TlsClientUtils.offerInput(set)
+             //   var cleintInput = TlsClientUtils.offerInput(set)
 
                // LogUtils.e(TAG, "---------------->cleintInput : " + HexStrUtils.byteArrayToHexString(cleintInput))
 

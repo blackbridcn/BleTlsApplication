@@ -16,6 +16,7 @@ import java.security.Security;
  * Date: 2021/12/9 17:04
  * Description:
  * Remark:
+ * (TLS1.2连接过程解析 - 基于ECDHE密钥交换算法)
  * https://blog.csdn.net/qq_38975553/article/details/112987893
  */
 public class TlsServerUtils {
@@ -43,31 +44,11 @@ public class TlsServerUtils {
         }
     }
 
-    public static byte[] receiverClientHello(byte[] hello) {
+    public static byte[] offerInput(byte[] clientMsg) {
         try {
-
-            tlsServerProtocol.offerInput(hello);
-            int availableOutputBytes = tlsServerProtocol.getAvailableOutputBytes();
-            if (availableOutputBytes > 0) {
-                byte[] data = new byte[availableOutputBytes];
-                tlsServerProtocol.readOutput(data, 0, availableOutputBytes);
-              //  LogUtils.e("TAG", "-------------------------> availableOutputBytes value: " + ByteHexUtils.INSTANCE.byteArrayToHexString(data));
-                return data;
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            LogUtils.e(TAG," receiverClientHello  IOException :"+e.getMessage());
-        }
-        return null;
-    }
-
-    public static byte[] offerInput(byte[] clientMsg) throws IOException {
-        try {
-            LogUtils.e("TAG", "-------------------------> offerInput value: " + HexStrUtils.INSTANCE.byteArrayToHexString(clientMsg));
             tlsServerProtocol.offerInput(clientMsg);
             int availableOutputBytes = tlsServerProtocol.getAvailableOutputBytes();
-            LogUtils.e("TAG", "-------------------------> availableOutputBytes :"+ availableOutputBytes);
+            LogUtils.e("TAG", "----------> availableOutputBytes :"+ availableOutputBytes);
             if (availableOutputBytes > 0) {
                 byte[] data = new byte[availableOutputBytes];
                 tlsServerProtocol.readOutput(data, 0, availableOutputBytes);

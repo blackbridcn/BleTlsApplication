@@ -1552,9 +1552,9 @@ public class TlsClientProtocol
                 // TODO[tls13] Prevent offering SSLv3 AND TLSv13?
                 recordStream.setWriteVersion(ProtocolVersion.SSLv3);
             } else {
-                //recordStream.setWriteVersion(ProtocolVersion.TLSv12);
+                recordStream.setWriteVersion(ProtocolVersion.TLSv12);
                 //yzzhang
-                recordStream.setWriteVersion(ProtocolVersion.TLSv13);
+                //recordStream.setWriteVersion(ProtocolVersion.TLSv13);
             }
 
             earliestVersion = ProtocolVersion.getEarliestTLS(supportedVersions);

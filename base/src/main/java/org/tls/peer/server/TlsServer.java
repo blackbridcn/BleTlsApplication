@@ -1,7 +1,6 @@
 package org.tls.peer.server;
 
 
-
 import com.train.base.R;
 import com.train.base.application.BaseApplication;
 
@@ -11,6 +10,7 @@ import org.bouncycastle.tls.CipherSuite;
 import org.bouncycastle.tls.ClientCertificateType;
 import org.bouncycastle.tls.DefaultTlsServer;
 import org.bouncycastle.tls.HashAlgorithm;
+import org.bouncycastle.tls.NamedGroup;
 import org.bouncycastle.tls.ProtocolVersion;
 import org.bouncycastle.tls.SignatureAlgorithm;
 import org.bouncycastle.tls.SignatureAndHashAlgorithm;
@@ -34,6 +34,16 @@ import java.util.Vector;
  */
 public class TlsServer extends DefaultTlsServer {
 
+    private static final String TAG = TlsServer.class.getSimpleName();
+
+    private static final int[] DEFAULT_CIPHER_SUITES = new int[]
+            {
+                    //tls 1.2
+                    CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM,
+                    //tls1.3
+                   // CipherSuite.TLS_AES_128_GCM_SHA256
+            };
+
     public Boolean handshakeFinished = false;
 
     public TlsServer(TlsCrypto crypto) {
@@ -44,23 +54,39 @@ public class TlsServer extends DefaultTlsServer {
     public void init(TlsServerContext tlsServerContext) {
         super.init(tlsServerContext);
         handshakeFinished = false;
-        //LogUtils.e("TAG", "TlsV2Server init ----------------> ");
     }
 
     @Override
     public int[] getCipherSuites() {
-        //LogUtils.e("TAG", "TlsV2Server getCipherSuites ----------------> ");
-        //return super.getCipherSuites();
-        return new int[]{
-                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM,
-        };
+
+        return DEFAULT_CIPHER_SUITES;
+    }
+
+    @Override
+    protected int[] getSupportedCipherSuites() {
+        //return super.getSupportedCipherSuites();
+        return DEFAULT_CIPHER_SUITES;
+    }
+
+
+    @Override
+    public int[] getSupportedGroups() throws IOException {
+        //return super.getSupportedGroups();
+        return new int[]{ NamedGroup.secp256k1 };
+        //secp256k1
+    }
+
+    //配置tls Server 支持tls版本
+    protected ProtocolVersion[] getSupportedVersions() {
+        // TODO[tls13] Enable TLSv13 by default in due course
+        return ProtocolVersion.TLSv13.downTo(ProtocolVersion.TLSv12);
     }
 
     @Override
     public void notifyHandshakeComplete() throws IOException {
         super.notifyHandshakeComplete();
         handshakeFinished = true;
-        LogUtils.e("TAG", "TlsV2Server notifyHandshakeComplete ----------------> ");
+        LogUtils.e(TAG, "TlsV2Server notifyHandshakeComplete ----------------> ");
 
     }
 
@@ -73,13 +99,17 @@ public class TlsServer extends DefaultTlsServer {
     @Override
     public void notifyOfferedCipherSuites(int[] ints) throws IOException {
         super.notifyOfferedCipherSuites(ints);
-        //LogUtils.e("TAG", "TlsV2Server notifyOfferedCipherSuites ----------------> "+ints[0]);
+        StringBuffer sb=new StringBuffer();
+        for (int i = 0; i < ints.length; i++) {
+            sb.append(Integer.toHexString(ints[i]));
+        }
+        LogUtils.e(TAG, "TlsServer notifyOfferedCipherSuites  客户端提供 CipherSuites: " + sb.toString());
     }
 
     @Override
     public void notifyClientVersion(ProtocolVersion protocolVersion) throws IOException {
         super.notifyClientVersion(protocolVersion);
-         LogUtils.e("TAG", "TlsV2Server notifyClientVersion ----------------> " + protocolVersion.toString());
+        LogUtils.e(TAG, "TlsServer notifyClientVersion  客户段支持对tls 版本" + protocolVersion.toString());
     }
 
     protected TlsCredentialedSigner getECDSASignerCredentials() throws IOException {
@@ -87,6 +117,8 @@ public class TlsServer extends DefaultTlsServer {
 
         return loadSignerCredentials(SignatureAlgorithm.ecdsa);
     }
+
+
 
     @Override
     public CertificateRequest getCertificateRequest() throws IOException {

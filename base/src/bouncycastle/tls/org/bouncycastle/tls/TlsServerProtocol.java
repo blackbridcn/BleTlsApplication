@@ -376,8 +376,10 @@ public class TlsServerProtocol
                 securityParameters.getCipherSuite(), serverHelloExtensions);
     }
 
+    //生成ServerHello
     protected ServerHello generateServerHello(ClientHello clientHello, HandshakeMessageInput clientHelloMessage)
             throws IOException {
+
         ProtocolVersion clientLegacyVersion = clientHello.getVersion();
         if (!clientLegacyVersion.isTLS()) {
             throw new TlsFatalAlert(AlertDescription.illegal_parameter);
@@ -392,16 +394,20 @@ public class TlsServerProtocol
                 TlsExtensionsUtils.getSupportedVersionsExtensionClient(clientHello.getExtensions()));
 
         ProtocolVersion clientVersion = clientLegacyVersion;
+
+        // 读取 clientHello扩展字段中对版本支持数据
         if (null == tlsServerContext.getClientSupportedVersions()) {
             if (clientVersion.isLaterVersionOf(ProtocolVersion.TLSv12)) {
                 clientVersion = ProtocolVersion.TLSv12;
             }
-
+            LogUtils.e(TAG,"客户端支持TLS最高版本 clientVersion :"+clientVersion);
+            //
             tlsServerContext.setClientSupportedVersions(clientVersion.downTo(ProtocolVersion.SSLv3));
         } else {
+            //选择Clint 中支持对最新TLS版本
             clientVersion = ProtocolVersion.getLatestTLS(tlsServerContext.getClientSupportedVersions());
         }
-
+        LogUtils.e(TAG,"Last 客户端支持TLS最高版本 clientVersion :"+clientVersion);
         // Set the legacy_record_version to use for early alerts 
         recordStream.setWriteVersion(clientVersion);
 
@@ -425,6 +431,7 @@ public class TlsServerProtocol
 
         tlsServer.notifyFallback(Arrays.contains(offeredCipherSuites, CipherSuite.TLS_FALLBACK_SCSV));
 
+        //客户端提供支持加密套件CipherSuites
         tlsServer.notifyOfferedCipherSuites(offeredCipherSuites);
 
         // TODO[tls13] Negotiate cipher suite first?
@@ -435,6 +442,7 @@ public class TlsServerProtocol
             // Always select the negotiated version from the initial handshake
             serverVersion = tlsServerContext.getServerVersion();
         } else {
+
             serverVersion = tlsServer.getServerVersion();
             if (!ProtocolVersion.contains(tlsServerContext.getClientSupportedVersions(), serverVersion)) {
                 throw new TlsFatalAlert(AlertDescription.internal_error);
@@ -443,8 +451,12 @@ public class TlsServerProtocol
             securityParameters.negotiatedVersion = serverVersion;
         }
 
+        LogUtils.e(TAG," ProtocolVersion 协商结果："+serverVersion);
+
+        //ECC 参数
         securityParameters.clientSupportedGroups = TlsExtensionsUtils.getSupportedGroupsExtension(
                 clientHello.getExtensions());
+
         securityParameters.serverSupportedGroups = tlsServer.getSupportedGroups();
 
         if (ProtocolVersion.TLSv13.isEqualOrEarlierVersionOf(serverVersion)) {

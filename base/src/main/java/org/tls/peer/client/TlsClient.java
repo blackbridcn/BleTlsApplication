@@ -70,8 +70,9 @@ public class TlsClient extends DefaultTlsClient {
 
     protected ProtocolVersion[] getSupportedVersions() {
         // [tls13] Enable TLSv13 by default in due course
-        return ProtocolVersion.TLSv13.downTo(ProtocolVersion.TLSv12);
+        return ProtocolVersion.TLSv12.downTo(ProtocolVersion.TLSv12);
     }
+
 
     //
     @Override
@@ -117,7 +118,6 @@ public class TlsClient extends DefaultTlsClient {
         // secp256k1
         vector.add(22);
 
-        TlsExtensionsUtils.addSupportedGroupsExtension(clientExtensions,vector);
         TlsExtensionsUtils.addSupportedGroupsExtension(clientExtensions,vector);
 
         return clientExtensions;

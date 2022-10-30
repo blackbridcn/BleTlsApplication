@@ -14,12 +14,13 @@ import androidx.lifecycle.ViewModel
 import com.train.peripheral.R
 import org.ble.callback.BleGattServerCallback
 import org.ble.utils.BleCompat
-import org.bouncycastle.tls.ByteQueue
 import org.bouncycastle.tls.RecordFormat
 import org.bouncycastle.tls.TlsFatalAlert
 import org.bouncycastle.tls.TlsUtils
 import org.e.ble.utils.HexStrUtils
 import org.tls.peer.server.TlsServerUtils
+import org.tls.protocol.ContentType
+import org.tls.protocol.HandshakeType
 import org.tls.protocol.TlsProtocolData
 import org.tls.utils.ByteUtils
 import org.tls.utils.BytesQueue
@@ -113,8 +114,9 @@ abstract class GattServerViewModel : ViewModel() {
             super.onClientBleReq(device, characteristic, value, mtu)
             setCurrentDevice(device)
             //TLS消息
-            //parseMsg(value);
-            readBleTlsData(value,device);
+            parseMsg(value);
+           // readBleTlsData(value, device);
+
         }
 
         override fun onDisConnBleDevice(centerDevice: BluetoothDevice) {
@@ -122,7 +124,7 @@ abstract class GattServerViewModel : ViewModel() {
             hasConnCentral = false
             if (hasSetupGattServer) {
                 stopTimeOutTask()
-                releaseGattServer()
+                // releaseGattServer()
                 handler.post {
                     _errRes.value = R.string.ble_even_exception_tip
                 }
@@ -136,36 +138,15 @@ abstract class GattServerViewModel : ViewModel() {
     var fragmentLen = 0
 
     var list = ArrayList<ByteArray>()
-    var lastHead: ByteArray? = null
+
+
+    var lastHeader: ByteArray? = null
 
     val LENGTH_OFFSET = 3
     val FRAGMENT_OFFSET = 5
     var hasHead = true
-
-    var hasFragment = false
-
-
     private var tlsHandshakeQueue = BytesQueue(0)
-    var packSize = 0
 
-    fun parseMsg(source: ByteArray) {
-        var length = source.size
-        if (length > 0) {
-            if (!hasFragment) {
-                if(length>FRAGMENT_OFFSET){
-                    packSize = TlsUtils.readUint16(source, RecordFormat.LENGTH_OFFSET)
-                }
-                tlsHandshakeQueue.addData(source,0,length)
-                hasFragment=true
-            }else{
-                tlsHandshakeQueue.addData(source,0,length)
-            }
-        }
-
-        if(tlsHandshakeQueue.available() ==packSize){
-            TlsServerUtils.offerInput(tlsHandshakeQueue.availableByteArray())
-        }
-    }
 
     var tlsHead = false
 
@@ -174,36 +155,52 @@ abstract class GattServerViewModel : ViewModel() {
         var length = value.size
         if (length > 0) {
             var values = value
-            lastHead?.let {
-                length += it.size
 
+            //上一帧数据中，再build一个完整命令数据包后仍然包含有下一命令包的部分数据，
+            // 这里将上一帧中遗留的数据与新的一帧拼接再在一起再重新处理
+            lastHeader?.let {
+                length += it.size
                 var newValue = ByteArray(length)
-                System.arraycopy(lastHead, 0, newValue, 0, it.size)
+                //拼接数据array
+                System.arraycopy(lastHeader, 0, newValue, 0, it.size)
                 System.arraycopy(values, 0, newValue, it.size, values.size)
                 values = newValue
-                lastHead = null
+                lastHeader = null
             }
-            var index = 0
-            while (index <= length && (length - index > 0) && hasHead) {
-                if (length - index >= FRAGMENT_OFFSET) {
+
+
+            //游标 ，表示读取到那个位置了
+            var cursor = 0
+            while (cursor <= length && (length - cursor > 0) && hasHead) {
+                //
+                if (length - cursor >= FRAGMENT_OFFSET) {
+
                     var bodyLen =
-                        ByteUtils.readUint16(values, index + LENGTH_OFFSET) + FRAGMENT_OFFSET
-                    if (index + bodyLen <= length) {
-                        readTlsPackage(values, index, bodyLen)
-                        index += bodyLen
+                        ByteUtils.readUint16(values, cursor + LENGTH_OFFSET) + FRAGMENT_OFFSET
+
+                    if (cursor + bodyLen <= length) {
+
+                        readTlsPackage(values, cursor, bodyLen)
+
+                        cursor += bodyLen
+
                     } else {
                         hasHead = false
-                        lastHead = ByteArray(length - index)
-                        System.arraycopy(values, index, lastHead, 0, length - index);
+                        lastHeader = ByteArray(length - cursor)
+                        System.arraycopy(values, cursor, lastHeader, 0, length - cursor);
                     }
                 } else {
                     hasHead = false
-                    lastHead = ByteArray(length - index)
-                    System.arraycopy(values, index, lastHead, 0, length - index);
+                    lastHeader = ByteArray(length - cursor)
+                    System.arraycopy(values, cursor, lastHeader, 0, length - cursor);
                 }
             }
+
+            //如果执行到这里就表示上一帧数据中，包含两条数据包数据，
+            //即上一条数据包的结尾数据和新数据包部分头部数据
             hasHead = true
-            lastHead ?: let {
+
+            lastHeader ?: let {
                 try {
                     tlsHandshakeQueue.removeData(tlsHandshakeQueue.available())
                     tlsFinished = true
@@ -224,7 +221,7 @@ abstract class GattServerViewModel : ViewModel() {
                         //startTimeOutTask()
                         // sendMsgToCentral(tlsFail)
                     }
-                    releaseGattServer()
+                    //releaseGattServer()
                     _errMsg.value = e.message
                 }
             }
@@ -235,9 +232,9 @@ abstract class GattServerViewModel : ViewModel() {
         if (tlsHandshakeQueue.available() == 0) {
             var dest = ByteArray(bodyLen)
             System.arraycopy(source, index, dest, 0, bodyLen)
-           var serverHello= TlsServerUtils.offerInput(dest)
+            var serverHello = TlsServerUtils.offerInput(dest)
             LogUtils.e(TAG, "${HexStrUtils.byteArrayToHexString(dest)}")
-            if(serverHello!=null){
+            if (serverHello != null) {
                 sendMsgToCentral(serverHello);
                 var protocolData = TlsProtocolData.initData(serverHello);
                 org.utlis.LogUtils.e("-----------> serverHello :${protocolData}")
@@ -247,6 +244,127 @@ abstract class GattServerViewModel : ViewModel() {
         }
         tlsHandshakeQueue.addData(source, index, bodyLen)
     }
+
+
+    var packHeader = false
+
+    private var tlsCacheQueue = BytesQueue(0)
+    private var packageCacheQueue = BytesQueue(0)
+
+    var cacheArray: ByteArray? = null
+    var cacheHeader: ByteArray? = null
+
+    var packSize: Int = 0
+    var packCursor: Int = 0
+
+    fun parseMsg(msg: ByteArray) {
+        var source = checkCacheHeader(msg)
+        var length = source.size
+        if (length > 0) {
+            //是否已经接收到一包数据的头部数据(包括Tls长度部分)
+            if (!packHeader) {
+                //source 必须包括完整的 length（表示数据包长度的字节位）数据位，
+                // TLV（Type-Length-Value）中至少要包含完整T（Type）V（Length）数据；
+                if (length > FRAGMENT_OFFSET) {
+                    packSize = TlsUtils.readUint16(
+                        source,
+                        RecordFormat.LENGTH_OFFSET
+                    ) + RecordFormat.FRAGMENT_OFFSET
+                    packHeader = true
+                    buildPackageValue(source, length)
+                } else {
+                    //不足Length数据位， 拼接到下一帧数据，继续
+                    cacheHeader = ByteArray(length);
+                    cacheHeader?.let { System.arraycopy(source, 0, it, 0, length) };
+                }
+            } else {
+                buildPackageValue(source, length)
+            }
+            if (tlsCacheQueue.available() == packSize) {
+                LogUtils.e(
+                    TAG,
+                    "parseMsg  ： ${HexStrUtils.byteArrayToHexString(tlsCacheQueue.availableByteArray())}"
+                )
+                //TlsServerUtils.offerInput(tlsCacheQueue.availableByteArray())
+            }
+        }
+
+    }
+
+
+    var lastType = byteArrayOf(
+        HandshakeType.client_hello,
+        HandshakeType.server_hello_done,
+        HandshakeType.finished
+    )
+
+    private fun buildPackageValue(source: ByteArray, length: Int) {
+        if (packSize - packCursor > length) {
+            //新的一帧数据中还是只是之前数据包中的一部分，还没有拼接完一包完整的数据包
+            packCursor += length
+            packageCacheQueue.addData(source, 0, length)
+        } else if (packSize - packCursor == length) {
+            //1.本次通讯中并不是最后一帧，而且其他包最后一帧刚好是接收到一帧数据
+            //2.刚好是本次通讯中的最后一帧数据
+
+            //解决: 定时任务
+            packageCacheQueue.addData(source, 0, length)
+
+            var cacheLast = ByteArray(packSize);
+            var size = packageCacheQueue.available();
+            packageCacheQueue.read(cacheLast, size - packSize, packSize, 0);
+            LogUtils.e(TAG, "${HexStrUtils.byteArrayToHexString(cacheLast)}")
+            if (cacheLast[0] == ContentType.handshake && lastType.contains(cacheLast[FRAGMENT_OFFSET])) {
+                //最后一帧
+                var buff = packageCacheQueue.availableByteArray();
+                var serverHello = TlsServerUtils.offerInput(buff)
+                LogUtils.e(TAG, "${HexStrUtils.byteArrayToHexString(buff)}")
+                if (serverHello != null) {
+                    sendMsgToCentral(serverHello);
+                    var protocolData = TlsProtocolData.initData(serverHello);
+                    org.utlis.LogUtils.e("-----------> serverHello :${protocolData}")
+                }
+
+            } else {
+                initPackageState();
+            }
+
+
+        } else {
+            //新的一帧数据中，不仅包含之前的一包数据，而且还包含了下包数据中的部分数据
+            var lastCount = packSize - packCursor
+            packageCacheQueue.addData(source, 0, lastCount)
+
+            initPackageState()
+
+            //剩下的数据（ lastCount～ length ） 新的数据包数据，直接交给下一帧去处理，Length数据位， 拼接到下一帧数据，继续解析
+            cacheHeader = ByteArray(length - lastCount);
+            cacheHeader?.let { System.arraycopy(source, lastCount, it, 0, length - lastCount) };
+
+        }
+    }
+
+    private fun initPackageState() {
+        packHeader = false
+        packSize = 0
+        packCursor = 0
+    }
+
+    private fun checkCacheHeader(source: ByteArray): ByteArray {
+        var value = source
+
+        cacheHeader?.let {
+            // 将上次不足Length数据位的部分 字节数据， 拼接到下一帧数据，作为一个新一帧，继续处理
+            var newValue = ByteArray(it.size + source.size)
+            //拼接数据array
+            System.arraycopy(it, 0, newValue, 0, it.size)
+            System.arraycopy(value, 0, newValue, it.size, value.size)
+            value = newValue
+            cacheHeader = null
+        }
+        return value
+    }
+
 
     fun setCurrentDevice(device: BluetoothDevice) {
         this.device = device

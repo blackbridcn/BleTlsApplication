@@ -365,6 +365,7 @@ public abstract class AbstractTlsServer
         }
     }
 
+    //根据客户端提供支持段tls版本数组 与  server 支持版本 协商tls 版本
     public ProtocolVersion getServerVersion()
         throws IOException
     {
@@ -394,6 +395,7 @@ public abstract class AbstractTlsServer
         throws IOException
     {
         SecurityParameters securityParameters = context.getSecurityParametersHandshake();
+
         ProtocolVersion negotiatedVersion = securityParameters.getNegotiatedVersion();
 
         if (TlsUtils.isTLSv13(negotiatedVersion)) {
