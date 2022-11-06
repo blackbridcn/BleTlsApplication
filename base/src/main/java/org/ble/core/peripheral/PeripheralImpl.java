@@ -339,10 +339,6 @@ public class PeripheralImpl implements PeripheralCore {
             characteristic.setValue(value);
             //响应客户端
             mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value);
-            Logger.e(TAG, " onCharacteristicWriteRequest \n" +
-                    " Value: " + HexStrUtils.INSTANCE.byteArrayToHexString(value) + "\n" +
-                    " UUID: " + characteristic.getUuid().toString()
-            );
             //这里是Rx characteristic
             if (bleGattServerCallback != null) {
                 bleGattServerCallback.onClientBleReq(device, characteristic, value, maxMtu);

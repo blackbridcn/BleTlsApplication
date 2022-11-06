@@ -1,6 +1,103 @@
+client_hello
+
+server_hello 02 2
+certificate  0B 11   回调给客户端实现类校验证书
+server_key_exchange 0C 12  读取参数hash签名校验 计算
+server_hello_done 0E 14  读取客户端证书（认证信息） build certificate msg，ClientKeyExchange  establishMasterSecret  sendCertificateVerifyMessage sendChangeCipherSpec
+
+certificate  0B 11
+client_key_exchange 10 16
+certificate_verify 0F 15
+ChangeCipherSpec   ChangeCipherSpec 140303 0001 01  在接收到该协议后，所有接收到的数据都需要解密。
 
 
-org.bouncycastle.tls.TlsClientProtocol
+160303 0201 0B 0001FD0001FA0001F7308201F330820198A00302010202082258A7AF9A124AB8301006072A8648CE3D020106052B8104000A306C311830160603550406130F6475616C69747920526F6F7420436131193017060355040B0C1048494420476C6F61626C205065616B65310E300C060355040A0C055065616B65310B300906035504061302434E310B300906035504080C024744310B300906035504070C02535A301E170D3232303130363133343833365A170D3233303130363133343833365A306D31193017060355040613106475616C6974792050686F6E6520436131193017060355040B0C1048494420476C6F61626C205065616B65310E300C060355040A0C055065616B65310B300906035504061302434E310B300906035504080C024744310B300906035504070C02535A3056301006072A8648CE3D020106052B8104000A034200046A6BC46ED4F8ED0FEF1B852C75AEB86A9BC4E405DF13BEC02A18200C3F10557612AAD769E2114A6C21CEAB699C74845C7C2E93BEF01A12CBE3078509CE5C1567A320301E300C0603551D130101FF04023000300E0603551D0F0101FF040403020780300A06082A8648CE3D0403020349003046022100F33971D275B9A155FE1CA8DD8A9FBCD08F0BABA2ECEE4B0AD5E2DC4858CA4BE8022100CCEC5AFAA297775F6EE9D2E7BA8E0BEDC41E091FFA6E66FCA3CE4B984BCB2D57
+160303 0046 10 0000424104E554F1893EDD40F0EACA1FAC7657685A9FE41E6E34E79A758C9B983B5864EE0E4AAE539A6F843BD95A0AD3F842AD6BE2F174B9CE1BF9E6EDD6F862214EED090C
+160303 0050 0F 00004C040300483046022100B3E34B0571C0E48FE41EC245B3243AC80CBA78D87E89CCF13F1620ED8361C37202210093C63A12F44117E29FE1A6550745781A6BECBE8CB15BC743D64F9DCC9AAF29DF
+140303 0001 01
+160303 0028 00 0000000000000021C4C8686F094A61DD406ECC96E248FDD1F04A68F9E6C23B83523064F418C7DF
 
-sendClientHello
 
+            Elliptic Curve Cryptography (ECC) Cipher Suites
+                   for Transport Layer Security (TLS)
+
+
+              Client                                        Server
+              ------                                        ------
+
+              ClientHello          -------->
+                                                       ServerHello
+                                                      Certificate*
+                                                ServerKeyExchange*
+                                              CertificateRequest*+
+                                   <--------       ServerHelloDone
+              Certificate*+
+              ClientKeyExchange
+              CertificateVerify*+
+              [ChangeCipherSpec]
+              Finished             -------->
+                                                [ChangeCipherSpec]
+                                   <--------              Finished
+
+              Application Data     <------->      Application Data
+
+
+                   * message is not sent under some conditions
+                   + message is not sent unless client authentication
+                     is desired
+
+                 Figure 1: Message flow in a full TLS handshake
+
+
+
+
+0.org.bouncycastle.jce.provider.BouncyCastleProvider
+
+PROVIDER_NAME 修改BC 为 EC 解决Android系统已经基础BC库导致冲突；
+
+
+1.org.bouncycastle.tls.TlsClientProtocol
+
+sendClientHello函数中修改 构建ClientHello中的tls版本；
+
+
+基础知识点
+
+RFC 5246 TLS 1.2协议主体协议 ，2008年发布。
+RFC 8446 TLS 1.3协议主体协议 ，2018年发布。
+
+RFC 5077 Tls Session协议，Session 在Tls1.2中继续保留，但是在Tls1.3(rfc8446)中已经取消，
+         client not offering a pre-TLS 1.3 session MUST generate a new 32-byte value
+
+
+signature_algorithms ：tls1.2以下（包括1.2）扩展字段中必须传参数
+
+
+
+TLS 1.3 中Pre_shared_key和key_share对应的两种密钥交换模式
+1、TLS1.3的整个协议的文档规范 请参照 RFC 8846，协议规范中指出，TLS1.3提供三方面的安全属性，分别是身份认证、通信加密、完整性验证。
+
+2、TLS1.3协议主要包括两个组成部分，分别是握手协议、记录协议、其中记录协议包括了警告协议。而握手协议的主要作用是实现双方身份认证，协商加密模式，建立共享密钥参数，产生一个主秘钥用于后续记录协议使用加密应用层通信消息。
+
+3、TLS1.3提供密钥交换模式一共有三种分别是：
+
+       （EC)DHE （DDiffer-Hellman overr either finite fields or elliptic curves）（论文中讨论有限域上椭圆曲线秘钥交换模式）
+
+         PSK -Only
+
+         PSK with (EC)DHE (暂时还没有实现)
+
+4、Pre_shared_key和key_share的内容区别
+
+              key_share 是Client发送ClientHello中Extension中包含的一个对应Support_group中椭圆曲线的对应计算的公钥集（ECDHE）
+
+              Pre_shared_key是PSK模式中
+
+            （TLS1.3中删除了之前版本在中使用的会话票据，而是使用PSK模式建立会话恢复）
+
+   其中加密协商的进程主要四个可选的扩展影响（Cipher_suite 表明AEAD算法、 HKDF算法 哈希对），（Support_group  包含ECDHE组）（Signature_algorithms签名算法）（Pre_shared_key 包含对称密钥标签）
+
+
+
+server_key_exchange 0C 12
+server_hello_done 0E 14

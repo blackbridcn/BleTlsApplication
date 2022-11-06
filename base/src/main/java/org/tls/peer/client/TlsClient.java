@@ -65,6 +65,7 @@ public class TlsClient extends DefaultTlsClient {
 
     @Override
     public TlsAuthentication getAuthentication() throws IOException {
+        //证书鉴定
         return new ClientTlsAuthentication(this,this.context);
     }
 

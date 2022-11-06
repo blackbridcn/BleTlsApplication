@@ -296,8 +296,7 @@ public class TlsClientProtocol
             throws IOException {
         final SecurityParameters securityParameters = tlsClientContext.getSecurityParameters();
 
-        if (connection_state > CS_CLIENT_HELLO
-                && TlsUtils.isTLSv13(securityParameters.getNegotiatedVersion())) {
+        if (connection_state > CS_CLIENT_HELLO && TlsUtils.isTLSv13(securityParameters.getNegotiatedVersion())) {
             handle13HandshakeMessage(type, buf);
             return;
         }
@@ -325,6 +324,7 @@ public class TlsClientProtocol
 
         switch (type) {
             case HandshakeType.certificate: {
+                // 客户端收到服务端证书
                 switch (this.connection_state) {
                     case CS_SERVER_HELLO: {
                         handleSupplementalData(null);
@@ -334,6 +334,8 @@ public class TlsClientProtocol
                         /*
                          * NOTE: Certificate processing (including authentication) is delayed to allow for a
                          * possible CertificateStatus message.
+                         *
+                         * 证书处理（包括证书认证鉴定),获取Client证书
                          */
                         this.authentication = TlsUtils.receiveServerCertificate(tlsClientContext, tlsClient, buf);
                         break;
@@ -465,7 +467,7 @@ public class TlsClientProtocol
                         assertEmpty(buf);
 
                         this.connection_state = CS_SERVER_HELLO_DONE;
-
+                        //补充数据条目
                         Vector clientSupplementalData = tlsClient.getClientSupplementalData();
 
                         if (clientSupplementalData != null) {
@@ -475,7 +477,7 @@ public class TlsClientProtocol
 
                         TlsCredentialedSigner credentialedSigner = null;
                         TlsStreamSigner streamSigner = null;
-
+                        //
                         if (certificateRequest == null) {
                             this.keyExchange.skipClientCredentials();
                         } else {
@@ -539,6 +541,7 @@ public class TlsClientProtocol
                             establishMasterSecret(tlsClientContext, keyExchange);
                         }
 
+                        //设置客户端 加密组件
                         recordStream.setPendingCipher(TlsUtils.initCipher(tlsClientContext));
 
                         if (credentialedSigner != null) {
@@ -590,11 +593,11 @@ public class TlsClientProtocol
                     }
                     case CS_SERVER_CERTIFICATE:
                     case CS_SERVER_CERTIFICATE_STATUS: {
-
+                        //处理证书，回调给实现类处理
                         handleServerCertificate();
 
-
-
+                        //密钥交换，就是计算出 接下来到对称加密到公钥
+                        //不同到密钥交换算法不同实现类
                         this.keyExchange.processServerKeyExchange(buf);
 
                         assertEmpty(buf);

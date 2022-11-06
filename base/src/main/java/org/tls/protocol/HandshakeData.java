@@ -34,7 +34,7 @@ public class HandshakeData implements TlsProtoBodyData {
     private static final int HANDSHAKE_TYPE_OFFSET = 1;
 
     public static final int VERSION_OFFSET = 9;
-
+    //rfc5226
 
     public static final int VERSION_AFTER_OFFSET = 11;
 

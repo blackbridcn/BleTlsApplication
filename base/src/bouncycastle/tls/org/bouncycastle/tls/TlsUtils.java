@@ -2253,6 +2253,7 @@ public class TlsUtils {
         digitallySigned.encode(digestBuffer);
     }
 
+    //校验密钥交换参数 （包括客户端是否支持该签名算法）签名
     static void verifyServerKeyExchangeSignature(TlsContext context,
                                                  InputStream signatureInput,
                                                  TlsCertificate serverCertificate,
@@ -2290,6 +2291,7 @@ public class TlsUtils {
 
         TlsStreamVerifier streamVerifier = verifier.getStreamVerifier(digitallySigned);
 
+        //校验签名一致性
         boolean verified;
         if (streamVerifier != null) {
             sendSignatureInput(context, extraSignatureInput, digestBuffer, streamVerifier.getOutputStream());
@@ -4145,6 +4147,7 @@ public class TlsUtils {
         return keyExchange;
     }
 
+    //初始化加密组件
     static TlsCipher initCipher(TlsContext context) throws IOException {
         SecurityParameters securityParameters = context.getSecurityParametersHandshake();
         int cipherSuite = securityParameters.getCipherSuite();
@@ -4327,6 +4330,7 @@ public class TlsUtils {
         server.notifyClientCertificate(clientCertificate);
     }
 
+    //处理接收到到服务端端证书：就是回调到给开发者 实现类中去 校验
     static void processServerCertificate(TlsClientContext clientContext,
                                          CertificateStatus serverCertificateStatus, TlsKeyExchange keyExchange, TlsAuthentication clientAuthentication,
                                          Hashtable clientExtensions, Hashtable serverExtensions) throws IOException {
@@ -4573,6 +4577,8 @@ public class TlsUtils {
         return false;
     }
 
+
+    //服务端 证书处理（包括证书认证鉴定),获取Client证书
     static TlsAuthentication receiveServerCertificate(TlsClientContext clientContext, TlsClient client,
                                                       ByteArrayInputStream buf) throws IOException {
         SecurityParameters securityParameters = clientContext.getSecurityParametersHandshake();
@@ -4584,7 +4590,7 @@ public class TlsUtils {
 
         Certificate.ParseOptions options = new Certificate.ParseOptions()
                 .setMaxChainLength(client.getMaxCertificateChainLength());
-
+        //解析byte[] 为Certificate 对象
         Certificate serverCertificate = Certificate.parse(options, clientContext, buf, endPointHash);
 
         TlsProtocol.assertEmpty(buf);
@@ -4602,6 +4608,7 @@ public class TlsUtils {
         securityParameters.peerCertificate = serverCertificate;
         securityParameters.tlsServerEndPoint = endPointHash.toByteArray();
 
+        //获取Client 端 认证信息（就是证书信息）
         TlsAuthentication authentication = client.getAuthentication();
         if (null == authentication) {
             throw new TlsFatalAlert(AlertDescription.internal_error);

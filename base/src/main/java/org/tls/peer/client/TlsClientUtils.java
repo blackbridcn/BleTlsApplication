@@ -104,47 +104,10 @@ public class TlsClientUtils {
     }
 
 
-    public static byte[] continueHandshake(ByteQueue input) throws IOException {
-        boolean handshakeFinished = false;
-        byte[] data = null;
-        /*try {*/
-            int size = input.available();
-            byte[] serverHello = new byte[size];
-            input.read(serverHello, 0, size, 0);
-            tlsClientProtocol.offerInput(serverHello);
-            int dataAvailable = tlsClientProtocol.getAvailableOutputBytes();
-
-            if (dataAvailable != 0) {
-                data = new byte[dataAvailable];
-                tlsClientProtocol.readOutput(data, 0, dataAvailable);
-                LogUtils.e(TAG, "----------------------> : " + HexStrUtils.INSTANCE.byteArrayToHexString(data));
-            }
-            handshakeFinished = tlsV2Client.handshakeFinished;
-
-            if(data!=null){
-                return data;
-            }
-
-            LogUtils.e(TAG, "-----------------> handshakeFinished :" + handshakeFinished);
-            if (handshakeFinished) {
-                return data;
-            }
-            LogUtils.e(TAG, "handshakeFinished false ");
-
-      /*  } catch (IOException e) {
-            e.printStackTrace();
-            LogUtils.e(TAG, "Exception :" + e.getMessage());
-        }*/
-        return null;
-    }
-
-
     public static byte[] continueHandshake(byte[] serverHello) {
         boolean handshakeFinished = false;
         byte[] data = null;
         try {
-
-
             tlsClientProtocol.offerInput(serverHello);
 
             int dataAvailable = tlsClientProtocol.getAvailableOutputBytes();
@@ -171,11 +134,8 @@ public class TlsClientUtils {
 
         byte[] data = null;
         try {
-
             tlsClientProtocol.offerInput(input);
-
             int dataAvailable = tlsClientProtocol.getAvailableOutputBytes();
-
             if (dataAvailable != 0) {
                 data = new byte[dataAvailable];
                 tlsClientProtocol.readOutput(data, 0, dataAvailable);
@@ -206,7 +166,6 @@ public class TlsClientUtils {
     public static byte[] wrapData(byte[] input) {
         try {
         tlsClientProtocol.offerInput(input, 0, input.length);
-
         int dataAvailable = tlsClientProtocol.getAvailableOutputBytes();
         byte[] wrappedData = new byte[dataAvailable];
         tlsClientProtocol.readOutput(wrappedData, 0, wrappedData.length);
