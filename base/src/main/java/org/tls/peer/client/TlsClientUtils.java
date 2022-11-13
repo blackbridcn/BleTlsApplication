@@ -130,6 +130,14 @@ public class TlsClientUtils {
 
     }
 
+    public static  void onlyInput(byte[] input){
+        try {
+            tlsClientProtocol.offerInput(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static byte[] offerInput(byte[] input){
 
         byte[] data = null;

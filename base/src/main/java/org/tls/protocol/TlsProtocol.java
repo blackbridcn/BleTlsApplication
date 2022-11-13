@@ -1,6 +1,7 @@
 package org.tls.protocol;
 
 public class TlsProtocol {
+
     public static final int FRAGMENT_OFFSET = 5;
 
     public static boolean isTlsByteStream(byte[] bytes) {

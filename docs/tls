@@ -39,6 +39,9 @@ HTTPS协议、TLS协议、证书认证过程解析
 主要时证书认证
 https://www.cnblogs.com/snowater/p/7804889.html
 
+写给开发人员的实用密码学（八）—— 数字证书与 TLS 协议
+https://www.cnblogs.com/kirito-c/p/12872119.html
+
 
 https://mp.weixin.qq.com/s?__biz=MzUzODQxMzYxNQ==&mid=2247486876&idx=2&sn=f35f6d9b996f43505fb0d7a97353d01a&chksm=fad952dccdaedbca4dd4552c86a8136d9830c86230677278d96841710c79c71e93da9a55b1cf&mpshare=1&scene=1&srcid=1207gVPyO9rQBsomOK5R124C&sharer_sharetime=1638841163719&sharer_shareid=e00061625efb91fedb6d2428da7aee0c&exportkey=A2NpKn58yR0mz4JZRFVcVWk%3D&pass_ticket=x2TUGIQUf9hAS1wka6S5pkPfpsvtOBYsCHBfX1o6RVgx7Cou5s564eN3Il5%2B6avB&wx_header=0#rd
 
@@ -49,3 +52,56 @@ https://mp.weixin.qq.com/s?__biz=MzAxMTI4MTkwNQ==&mid=2650840922&idx=1&sn=1d9753
 https://mp.weixin.qq.com/s?__biz=MzAxMTI4MTkwNQ==&mid=2650840920&idx=2&sn=447afbe4c909f28ebb8a38d6c3aa86dc&chksm=80b74bc6b7c0c2d0d9fbdba498cd69016149eeb7be398a67cd25faae968dcaed1e24f50aef48&mpshare=1&scene=1&srcid=12116uKfsYQ89QqeoEC6eggR&sharer_sharetime=1639189396766&sharer_shareid=e00061625efb91fedb6d2428da7aee0c&exportkey=A543uxpGspIjwOCVdeaqy1M%3D&pass_ticket=i4Nd7NQ9L%2B2IbEQLSojQ15tnsYX%2FKxkxCCxoxiKYMA6ny0OdLqF64t9n2tIyuMvF&wx_header=0#rd
 
 https://github.com/iDevicesInc/SweetBlue/wiki/Android-BLE-Issues
+
+
+TLS 1.2
+TLS 1.2在 RFC 5246 中定义，于2008年8月发表。它基于更早的TLS 1.1规范。主要区别包括：
+
+可使用密码组合选项指定伪随机函数使用SHA-256替换MD5-SHA-1组合。
+
+可使用密码组合选项指定在完成消息的哈希认证中使用SHA-256替换MD5-SHA-1算法，但完成消息中哈希值的长度仍然被截断为96位。
+
+在握手期间MD5-SHA-1组合的数字签名被替换为使用单一Hash方法，默认为SHA-1。
+
+增强服务器和客户端指定Hash和签名算法的能力。
+
+扩大经过身份验证的加密密码，主要用于GCM和CCM模式的AES加密的支持。
+
+添加TLS扩展定义和AES密码组合[8]:2。所有TLS版本在2011年3月发布的RFC 6176中删除了对SSL的兼容，这样TLS会话将永远无法协商使用的SSL 2.0以避免安全问题。
+
+TLS 1.3
+参见：来回通讯延迟
+
+TLS 1.3在 RFC 8446 中定义，于2018年8月发表。[10]它基于更早的TLS 1.2规范，与TLS 1.2的主要区别包括：
+
+将密钥协商和认证算法从密码套件中分离出来。
+
+移除脆弱和较少使用的命名椭圆曲线支持（参见椭圆曲线密码学）。
+
+移除MD5和SHA-224密码杂凑函数的支持。
+
+请求数字签名，即便使用之前的配置。
+
+集成HKDF和半短暂DH提议。
+
+替换使用PSK和票据的恢复。
+
+支持1-RTT握手并初步支持0-RTT。
+
+通过在(EC)DH密钥协议期间使用临时密钥来保证完善的前向安全性。
+
+放弃许多不安全或过时特性的支持，包括数据压缩、重新协商、非AEAD密码本、静态RSA和静态DH密钥交换、自定义DHE分组、点格式协商、更改密码本规范的协议、UNIX时间的Hello消息，以及长度字段AD输入到AEAD密码本。
+
+禁止用于向后兼容性的SSL和RC4协商。
+
+集成会话散列的使用。
+
+弃用记录层版本号和冻结数以改进向后兼容性。
+
+将一些安全相关的算法细节从附录移动到标准，并将ClientKeyShare降级到附录。
+
+添加带有Poly1305消息验证码的ChaCha20流加密。
+
+添加Ed25519和Ed448数字签名算法。
+
+添加x25519和x448密钥交换协议。 作者：ANTIBili_MC https://www.bilibili.com/read/cv1003093 出处：bilibili

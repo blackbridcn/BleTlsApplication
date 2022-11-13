@@ -45,10 +45,25 @@ public class TlsProtocolData {
         if (values.length >= 5) {
             setContentLength(values);
         }
+        switch (this.contentType){
 
-        if (this.contentType == ContentType.handshake) {
-            processHandShake(values);
+            case  ContentType.handshake:
+                processHandShake(values);
+                break;
+            case  ContentType.alert:
+                break;
+
+            case  ContentType.change_cipher_spec:
+
+                break;
+            case  ContentType.application_data:
+
+                break;
+            case  ContentType.heartbeat:
+
+                break;
         }
+
     }
 
     private void processHandShake(byte[] values) {
@@ -56,6 +71,10 @@ public class TlsProtocolData {
         if (len > 6) {
             protoBody = HandshakeData.initPackage(values);
         }
+    }
+
+    private void processAlert(byte[] values){
+
     }
 
 

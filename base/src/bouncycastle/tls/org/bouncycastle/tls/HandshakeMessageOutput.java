@@ -23,6 +23,8 @@ class HandshakeMessageOutput
         HandshakeMessageOutput message = new HandshakeMessageOutput(handshakeType, body.length);
         message.write(body);
         message.send(protocol);
+
+
     }
 
     HandshakeMessageOutput(short handshakeType) throws IOException

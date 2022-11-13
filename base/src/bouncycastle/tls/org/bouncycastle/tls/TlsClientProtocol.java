@@ -561,7 +561,11 @@ public class TlsClientProtocol
                         LogUtils.e(TAG, " Client端 Build ChangeCipherSpec 数据");
                         sendChangeCipherSpec();
                         LogUtils.e(TAG, " Client端 Build FinishedMessage 数据");
+
                         try {
+                            // 当发送完 Change Cipher Spec 消息后必须立即发送 HandshakeType.finished 消息。
+                            // finished消息用于验证密钥交换和身份验证过程是否成功。
+                            //
                             sendFinishedMessage();
                             LogUtils.e(TAG, " Client端 sendFinishedMessage ");
                         } catch (Exception e) {
@@ -573,7 +577,7 @@ public class TlsClientProtocol
                     default:
                         throw new TlsFatalAlert(AlertDescription.unexpected_message);
                 }
-
+                LogUtils.e(TAG, " Client端 connection_state  CS_CLIENT_FINISHED");
                 this.connection_state = CS_CLIENT_FINISHED;
                 break;
             }

@@ -1447,6 +1447,13 @@ public abstract class TlsProtocol
         byte[] verify_data = null;
 
         try {
+
+            //Finished消息是第一个使用协商的算法簇进行加密和防篡改保护的消息。一旦双方都通过了该消息验证，就完成了TLS握手。
+            //VerifyData为客户端收发的所有握手数据的hash值（不包括本次消息）。与Certificate Verify的hash值可能会不一样。如果发送过Certificate Verify消息，服务端的握手消息会包含Certificate Verify握手的数据。
+            //
+            //需要注意的是，握手数据不包括协议头的握手协议明文数据（服务端返回Finished的验证握手数据是包含接收到客户端的Finished的明文hash值）。
+            //
+            //Finished消息数据加密和Appilication Data一致，具体数据加密在Application Data段进行说明。
             verify_data = TlsUtils.calculateVerifyData(context, handshakeHash, isServerContext);
         } catch (Exception e) {
             LogUtils.e(TAG, "sendFinishedMessage Exception: "+e.getMessage());
@@ -1464,7 +1471,7 @@ public abstract class TlsProtocol
                 securityParameters.tlsUnique = verify_data;
             }
         }
-        LogUtils.e(TAG, "sendFinishedMessage finished  ");
+        LogUtils.e(TAG, "HandshakeMessageOutput send HandshakeType.finished ");
 
         HandshakeMessageOutput.send(this, HandshakeType.finished, verify_data);
     }

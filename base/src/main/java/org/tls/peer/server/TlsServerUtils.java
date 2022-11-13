@@ -44,6 +44,14 @@ public class TlsServerUtils {
         }
     }
 
+    public static  void  onlyInput(byte[] inMsg){
+        try {
+            tlsServerProtocol.offerInput(inMsg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static byte[] offerInput(byte[] clientMsg) {
         try {
             tlsServerProtocol.offerInput(clientMsg);
