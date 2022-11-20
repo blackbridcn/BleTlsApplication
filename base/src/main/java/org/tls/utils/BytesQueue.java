@@ -9,13 +9,11 @@ import java.io.OutputStream;
 /**
  * A queue for bytes. This file could be more optimized.
  */
-public class BytesQueue
-{
+public class BytesQueue {
     /**
      * @return The smallest number which can be written as 2^x which is bigger than i.
      */
-    public static int nextTwoPow(int i)
-    {
+    public static int nextTwoPow(int i) {
         /*
          * This code is based of a lot of code I found on the Internet which mostly
          * referenced a book called "Hacking delight".
@@ -45,18 +43,15 @@ public class BytesQueue
 
     private boolean readOnlyBuf = false;
 
-    public BytesQueue()
-    {
+    public BytesQueue() {
         this(0);
     }
 
-    public BytesQueue(int capacity)
-    {
+    public BytesQueue(int capacity) {
         databuf = capacity == 0 ? TlsUtils.EMPTY_BYTES : new byte[capacity];
     }
 
-    public BytesQueue(byte[] buf, int off, int len)
-    {
+    public BytesQueue(byte[] buf, int off, int len) {
         this.databuf = buf;
         this.skipped = off;
         this.available = len;
@@ -70,24 +65,18 @@ public class BytesQueue
      * @param off How many bytes to skip at the beginning of the array.
      * @param len How many bytes to read from the array.
      */
-    public void addData(byte[] buf, int off, int len)
-    {
-        if (readOnlyBuf)
-        {
+    public void addData(byte[] buf, int off, int len) {
+        if (readOnlyBuf) {
             throw new IllegalStateException("Cannot add data to read-only buffer");
         }
 
-        if ((skipped + available + len) > databuf.length)
-        {
+        if ((skipped + available + len) > databuf.length) {
             int desiredSize = BytesQueue.nextTwoPow(available + len);
-            if (desiredSize > databuf.length)
-            {
+            if (desiredSize > databuf.length) {
                 byte[] tmp = new byte[desiredSize];
                 System.arraycopy(databuf, skipped, tmp, 0, available);
                 databuf = tmp;
-            }
-            else
-            {
+            } else {
                 System.arraycopy(databuf, skipped, databuf, 0, available);
             }
             skipped = 0;
@@ -100,14 +89,13 @@ public class BytesQueue
     /**
      * @return The number of bytes which are available in this buffer.
      */
-    public int available()
-    {
+    public int available() {
         return available;
     }
 
-    public  byte[] availableByteArray(){
-        byte[] out= new byte[available];
-        System.arraycopy(databuf,0,out,0,available);
+    public byte[] availableByteArray() {
+        byte[] out = new byte[available];
+        System.arraycopy(databuf, 0, out, 0, available);
         return out;
     }
 
@@ -117,10 +105,8 @@ public class BytesQueue
      * @param output The {@link OutputStream} to copy the bytes to.
      * @param length How many bytes to copy.
      */
-    public void copyTo(OutputStream output, int length) throws IOException
-    {
-        if (length > available)
-        {
+    public void copyTo(OutputStream output, int length) throws IOException {
+        if (length > available) {
             throw new IllegalStateException("Cannot copy " + length + " bytes, only got " + available);
         }
 
@@ -135,27 +121,29 @@ public class BytesQueue
      * @param len    How many bytes to read at all.
      * @param skip   How many bytes from our data to skip.
      */
-    public void read(byte[] buf, int offset, int len, int skip)
-    {
-        if ((buf.length - offset) < len)
-        {
+    public void read(byte[] buf, int offset, int len, int skip) {
+        if ((buf.length - offset) < len) {
             throw new IllegalArgumentException("Buffer size of " + buf.length
-                + " is too small for a read of " + len + " bytes");
+                    + " is too small for a read of " + len + " bytes");
         }
-        if ((available - skip) < len)
-        {
+        if ((available - skip) < len) {
             throw new IllegalStateException("Not enough data to read");
         }
         System.arraycopy(databuf, skipped + skip, buf, offset, len);
     }
 
-    public int readInt32()
-    {
-        if (available < 4)
-        {
+    public int readInt32() {
+        if (available < 4) {
             throw new IllegalStateException("Not enough data to read");
         }
         return TlsUtils.readInt32(databuf, skipped);
+    }
+
+    public void clear() {
+        skipped = 0;
+        available = 0;
+        databuf = null;
+        databuf= new byte[0];
     }
 
     /**
@@ -163,10 +151,8 @@ public class BytesQueue
      *
      * @param i How many bytes to remove.
      */
-    public void removeData(int i)
-    {
-        if (i > available)
-        {
+    public void removeData(int i) {
+        if (i > available) {
             throw new IllegalStateException("Cannot remove " + i + " bytes, only got " + available);
         }
 
@@ -180,36 +166,29 @@ public class BytesQueue
     /**
      * Remove data from the buffer.
      *
-     * @param buf The buffer where the removed data will be copied to.
-     * @param off How many bytes to skip at the beginning of buf.
-     * @param len How many bytes to read at all.
+     * @param buf  The buffer where the removed data will be copied to.
+     * @param off  How many bytes to skip at the beginning of buf.
+     * @param len  How many bytes to read at all.
      * @param skip How many bytes from our data to skip.
      */
-    public void removeData(byte[] buf, int off, int len, int skip)
-    {
+    public void removeData(byte[] buf, int off, int len, int skip) {
         read(buf, off, len, skip);
         removeData(skip + len);
     }
 
-    public byte[] removeData(int len, int skip)
-    {
+    public byte[] removeData(int len, int skip) {
         byte[] buf = new byte[len];
         removeData(buf, 0, len, skip);
         return buf;
     }
 
-    public void shrink()
-    {
-        if (available == 0)
-        {
+    public void shrink() {
+        if (available == 0) {
             databuf = TlsUtils.EMPTY_BYTES;
             skipped = 0;
-        }
-        else
-        {
+        } else {
             int desiredSize = BytesQueue.nextTwoPow(available);
-            if (desiredSize < databuf.length)
-            {
+            if (desiredSize < databuf.length) {
                 byte[] tmp = new byte[desiredSize];
                 System.arraycopy(databuf, skipped, tmp, 0, available);
                 databuf = tmp;

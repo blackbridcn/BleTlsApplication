@@ -1,8 +1,6 @@
 package org.tls.peer.client;
 
-import org.ble.utils.HexStrUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.tls.ByteQueue;
 import org.bouncycastle.tls.TlsClientProtocol;
 import org.tls.selector.TlsCryptoSelector;
 import org.utlis.LogUtils;
@@ -143,13 +141,12 @@ public class TlsClientUtils {
         byte[] data = null;
         try {
             tlsClientProtocol.offerInput(input);
+            LogUtils.e(TAG, "-----------------> handshakeFinished :" + tlsV2Client.handshakeFinished);
             int dataAvailable = tlsClientProtocol.getAvailableOutputBytes();
             if (dataAvailable != 0) {
                 data = new byte[dataAvailable];
                 tlsClientProtocol.readOutput(data, 0, dataAvailable);
             }
-
-            LogUtils.e(TAG, "-----------------> handshakeFinished :" + tlsV2Client.handshakeFinished);
             if (data!=null) {
                 return data;
             }

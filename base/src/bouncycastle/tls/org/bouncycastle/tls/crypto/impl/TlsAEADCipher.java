@@ -14,6 +14,7 @@ import org.bouncycastle.tls.crypto.TlsCryptoUtils;
 import org.bouncycastle.tls.crypto.TlsDecodeResult;
 import org.bouncycastle.tls.crypto.TlsEncodeResult;
 import org.bouncycastle.tls.crypto.TlsSecret;
+import org.utlis.LogUtils;
 
 /**
  * A generic TLS 1.2 AEAD cipher.
@@ -151,7 +152,7 @@ public class TlsAEADCipher
         int headerAllocation, byte[] plaintext, int plaintextOffset, int plaintextLength) throws IOException
     {
         byte[] nonce = new byte[encryptNonce.length + record_iv_length];
-
+        LogUtils.e("TAG","---------->TlsAEADCipher encodePlaintext nonceMode:"+nonceMode);
         switch (nonceMode)
         {
         case NONCE_RFC5288:

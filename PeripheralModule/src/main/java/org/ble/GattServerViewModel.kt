@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import com.train.peripheral.R
 import org.ble.callback.BleGattServerCallback
 import org.ble.utils.BleCompat
+import org.bouncycastle.util.encoders.Hex
 
 import org.e.ble.utils.HexStrUtils
 import org.tls.peer.server.TlsServerUtils
@@ -145,8 +146,11 @@ abstract class GattServerViewModel : RecordProtocol() {
 
 
     override fun outputAvailable(tlsPackage: ByteArray){
+        LogUtils.e(TAG,"------> outputAvailable :${org.ble.utils.HexStrUtils.byteArrayToHexString(tlsPackage)}")
+        if(tlsPackage!=null){
+            sendMsgToCentral(tlsPackage);
+        }
 
-        sendMsgToCentral(tlsPackage);
     }
 
     abstract fun startFunctionEvent(device: BluetoothDevice)

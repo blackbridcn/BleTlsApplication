@@ -2,6 +2,7 @@ package org.bouncycastle.tls;
 
 import org.bouncycastle.tls.crypto.TlsCertificate;
 import org.bouncycastle.tls.crypto.TlsCrypto;
+import org.utlis.LogUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -231,6 +232,7 @@ public class Certificate {
         Vector certificate_list = new Vector();
         while (buf.available() > 0) {
             if (certificate_list.size() >= maxChainLength) {
+                LogUtils.e("TAG","---------------->Certificate parse internal_error ");
                 throw new TlsFatalAlert(AlertDescription.internal_error,
                         "Certificate chain longer than maximum (" + maxChainLength + ")");
             }

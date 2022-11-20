@@ -19,6 +19,7 @@ import java.util.Vector;
 
 public class TlsServerProtocol
         extends TlsProtocol {
+    public static final String TAG = TlsServerProtocol.class.getSimpleName();
 
     protected TlsServer tlsServer = null;
 
@@ -400,14 +401,14 @@ public class TlsServerProtocol
             if (clientVersion.isLaterVersionOf(ProtocolVersion.TLSv12)) {
                 clientVersion = ProtocolVersion.TLSv12;
             }
-            LogUtils.e(TAG,"客户端支持TLS最高版本 clientVersion :"+clientVersion);
+            LogUtils.e(TAG, "客户端支持TLS最高版本 clientVersion :" + clientVersion);
             //
             tlsServerContext.setClientSupportedVersions(clientVersion.downTo(ProtocolVersion.SSLv3));
         } else {
             //选择Clint 中支持对最新TLS版本
             clientVersion = ProtocolVersion.getLatestTLS(tlsServerContext.getClientSupportedVersions());
         }
-        LogUtils.e(TAG,"Last 客户端支持TLS最高版本 clientVersion :"+clientVersion);
+        LogUtils.e(TAG, "Last 客户端支持TLS最高版本 clientVersion :" + clientVersion);
         // Set the legacy_record_version to use for early alerts 
         recordStream.setWriteVersion(clientVersion);
 
@@ -451,7 +452,7 @@ public class TlsServerProtocol
             securityParameters.negotiatedVersion = serverVersion;
         }
 
-        LogUtils.e(TAG," ProtocolVersion 协商结果："+serverVersion);
+        LogUtils.e(TAG, " ProtocolVersion 协商结果：" + serverVersion);
 
         //ECC 参数
         securityParameters.clientSupportedGroups = TlsExtensionsUtils.getSupportedGroupsExtension(
@@ -865,22 +866,23 @@ public class TlsServerProtocol
         }
 
         if (!isLegacyConnectionState()) {
-            LogUtils.e(TAG,"handleHandshakeMessage isLegacyConnectionState ");
+            LogUtils.e(TAG, " handleHandshakeMessage isLegacyConnectionState ");
             throw new TlsFatalAlert(AlertDescription.internal_error);
         }
 
         if (resumedSession) {
             if (type != HandshakeType.finished || this.connection_state != CS_SERVER_FINISHED) {
+                LogUtils.e(TAG, "handleHandshakeMessage unexpected_message ");
                 throw new TlsFatalAlert(AlertDescription.unexpected_message);
             }
-
+            LogUtils.e(TAG, "handleHandshakeMessage processFinishedMessage ");
             processFinishedMessage(buf);
             this.connection_state = CS_CLIENT_FINISHED;
-
+            LogUtils.e(TAG, "handleHandshakeMessage completeHandshake ");
             completeHandshake();
             return;
         }
-
+        LogUtils.e(TAG, "handleHandshakeMessage HandshakeType : "+HandshakeType.getName(type));
         switch (type) {
             case HandshakeType.client_hello: {
                 if (isApplicationDataReady()) {
@@ -1051,8 +1053,11 @@ public class TlsServerProtocol
                         // NB: Fall through to next case label
                     }
                     case CS_CLIENT_SUPPLEMENTAL_DATA: {
+                        LogUtils.e(TAG, "handleHandshakeMessage certificate CS_CLIENT_SUPPLEMENTAL_DATA receiveCertificateMessage");
                         receiveCertificateMessage(buf);
                         this.connection_state = CS_CLIENT_CERTIFICATE;
+                        LogUtils.e(TAG, "handleHandshakeMessage certificate CS_CLIENT_CERTIFICATE ");
+
                         break;
                     }
                     default:
@@ -1202,10 +1207,12 @@ public class TlsServerProtocol
     protected void notifyClientCertificate(Certificate clientCertificate)
             throws IOException {
         if (null == certificateRequest) {
+            LogUtils.e(TAG,"------------> notifyClientCertificate :internal_error");
             throw new TlsFatalAlert(AlertDescription.internal_error);
         }
-
+        LogUtils.e(TAG,"-----------------> notifyClientCertificate processClientCertificate 0");
         TlsUtils.processClientCertificate(tlsServerContext, clientCertificate, keyExchange, tlsServer);
+        LogUtils.e(TAG,"-----------------> notifyClientCertificate processClientCertificate 1");
     }
 
     protected void receive13ClientCertificate(ByteArrayInputStream buf)
@@ -1254,12 +1261,13 @@ public class TlsServerProtocol
 
         Certificate.ParseOptions options = new Certificate.ParseOptions()
                 .setMaxChainLength(tlsServer.getMaxCertificateChainLength());
-
+        LogUtils.e(TAG,"-----------------> receiveCertificateMessage Certificate.parse 0");
         Certificate clientCertificate = Certificate.parse(options, tlsServerContext, buf, null);
-
+        LogUtils.e(TAG,"-----------------> receiveCertificateMessage Certificate.parse 1");
         assertEmpty(buf);
-
+        LogUtils.e(TAG,"-----------------> receiveCertificateMessage notifyClientCertificate 0");
         notifyClientCertificate(clientCertificate);
+        LogUtils.e(TAG,"-----------------> receiveCertificateMessage notifyClientCertificate 1");
     }
 
     protected void receiveCertificateVerifyMessage(ByteArrayInputStream buf)

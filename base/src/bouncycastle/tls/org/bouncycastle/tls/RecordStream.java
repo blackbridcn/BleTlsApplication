@@ -1,9 +1,11 @@
 package org.bouncycastle.tls;
 
+import org.ble.utils.HexStrUtils;
 import org.bouncycastle.tls.crypto.TlsCipher;
 import org.bouncycastle.tls.crypto.TlsDecodeResult;
 import org.bouncycastle.tls.crypto.TlsEncodeResult;
 import org.bouncycastle.tls.crypto.TlsNullNullCipher;
+import org.utlis.LogUtils;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -73,9 +75,11 @@ class RecordStream {
     void enablePendingCipherRead(boolean deferred)
             throws IOException {
         if (pendingCipher == null) {
+            LogUtils.e("TAG","---------> enablePendingCipherRead internal_error");
             throw new TlsFatalAlert(AlertDescription.internal_error);
         }
         if (readCipherDeferred != null) {
+            LogUtils.e("TAG","---------> enablePendingCipherRead internal_error");
             throw new TlsFatalAlert(AlertDescription.internal_error);
         }
         if (deferred) {
@@ -254,6 +258,9 @@ class RecordStream {
 
         long seqNo = writeSeqNo.nextValue(AlertDescription.internal_error);
         ProtocolVersion recordVersion = writeVersion;
+        LogUtils.e("TAG","writeRecord :"+ContentType.getName(contentType)+" plaintext :"+ HexStrUtils.INSTANCE.byteArrayToHexString(plaintext));
+
+        LogUtils.e("TAG","writeRecord writeCipher :"+writeCipher.getClass());
 
         TlsEncodeResult encoded = writeCipher.encodePlaintext(seqNo, contentType, recordVersion,
                 RecordFormat.FRAGMENT_OFFSET, plaintext, plaintextOffset, plaintextLength);
@@ -266,8 +273,10 @@ class RecordStream {
         TlsUtils.writeUint16(ciphertextLength, encoded.buf, encoded.off + RecordFormat.LENGTH_OFFSET);
 
         try {
+            LogUtils.e("TAG","writeRecord  write :"+HexStrUtils.INSTANCE.byteArrayToHexString(encoded.buf));
             output.write(encoded.buf, encoded.off, encoded.len);
         } catch (InterruptedIOException e) {
+            LogUtils.e("TAG","writeRecord  InterruptedIOException :"+e.getMessage());
             throw new TlsFatalAlert(AlertDescription.internal_error, e);
         }
 

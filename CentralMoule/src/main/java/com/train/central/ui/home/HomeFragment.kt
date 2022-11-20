@@ -1,6 +1,5 @@
 package com.train.central.ui.home
 
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.os.Bundle
@@ -20,18 +19,13 @@ import org.ble.callback.BleGattCallback
 import org.ble.scan.*
 import org.ble.utils.HexStrUtils
 import org.bouncycastle.tls.RecordFormat
-import org.bouncycastle.tls.TlsFatalAlert
 import org.bouncycastle.tls.TlsUtils
 import org.recyclerview.IndexOutOfBoundsExcLinearLayoutManager
 import org.tls.peer.client.TlsClientUtils
-import org.tls.peer.server.TlsServerUtils
 import org.tls.protocol.ContentType
 import org.tls.protocol.HandshakeType
-import org.tls.protocol.TlsProtocolData
-import org.tls.utils.ByteUtils
 import org.tls.utils.BytesQueue
 import org.utlis.LogUtils
-import java.io.IOException
 import java.util.*
 
 class HomeFragment : Fragment(), AdapterListener {
@@ -167,10 +161,6 @@ class HomeFragment : Fragment(), AdapterListener {
             //blzGattCallback
             var startHakes = TlsClientUtils.startHandshake()
             BleClient.getInstance().sendMsgToGattServerDevice(gatt, characteristic, startHakes)
-
-            var protocolData = TlsProtocolData.initData(startHakes);
-            LogUtils.e("-----------> startHakes :${protocolData}")
-
         }
 
         override fun onBleServerResp(
@@ -199,6 +189,7 @@ class HomeFragment : Fragment(), AdapterListener {
     var packCursor: Int = 0
 
     var lastType = byteArrayOf(
+        HandshakeType.hello_request,
         HandshakeType.client_hello,
         HandshakeType.server_hello_done,
         HandshakeType.finished
@@ -258,20 +249,14 @@ class HomeFragment : Fragment(), AdapterListener {
 
             packageCacheQueue.read(cacheLast, 0, packSize, size - packSize);
 
-            LogUtils.e(TAG, "------------->> sendMsg Handshake Type: ${HandshakeType.getName(cacheLast[RecordFormat.FRAGMENT_OFFSET])}")
-
-            LogUtils.e(TAG, "${org.e.ble.utils.HexStrUtils.byteArrayToHexString(cacheLast)}")
-
             if (cacheLast[0] == ContentType.handshake && lastType.contains(cacheLast[FRAGMENT_OFFSET])) {
                 //最后一帧
                 var buff = packageCacheQueue.availableByteArray();
-
+                LogUtils.e("----------->tls offerInput :${HexStrUtils.byteArrayToHexString(buff)}")
+                packageCacheQueue.clear();
                 var startHakes = TlsClientUtils.offerInput(buff)
                 if (startHakes != null) {
-
                     BleClient.getInstance().sendMsgToGattServerDevice(gatt, characteristic, startHakes)
-                    //var protocolData = TlsProtocolData.initData(serverHello);
-                    // org.utlis.LogUtils.e("-----------> serverHello :${protocolData}")
                 }
 
             }

@@ -1,9 +1,13 @@
 package org.tls.protocol
 
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCharacteristic
 import androidx.lifecycle.ViewModel
+import org.ble.BleClient
 import org.bouncycastle.tls.RecordFormat
 import org.bouncycastle.tls.TlsUtils
 import org.e.ble.utils.HexStrUtils
+import org.tls.peer.client.TlsClientUtils
 import org.tls.peer.server.TlsServerUtils
 import org.tls.utils.BytesQueue
 import org.utlis.LogUtils
@@ -42,9 +46,7 @@ open abstract class RecordProtocol : ViewModel(){
                 // TLV（Type-Length-Value）中至少要包含完整T（Type）V（Length）数据；
                 if (length > FRAGMENT_OFFSET) {
                     packSize = TlsUtils.readUint16(source, RecordFormat.LENGTH_OFFSET) + RecordFormat.FRAGMENT_OFFSET
-                    org.utlis.LogUtils.e(TAG, "----->> parseMsg  : ${HexStrUtils.byteArrayToHexString(msg)}")
-                    org.utlis.LogUtils.e(TAG, "----->> parseMsg Handshake Type : ${HandshakeType.getName(source[RecordFormat.FRAGMENT_OFFSET])}")
-
+                    LogUtils.e(TAG, "----->> parseMsg Handshake Type : ${HandshakeType.getName(source[RecordFormat.FRAGMENT_OFFSET])}, packSize:${packSize}")
                     packHeader = true
                     buildPackageValue(source, length)
                 } else {
@@ -55,13 +57,10 @@ open abstract class RecordProtocol : ViewModel(){
             } else {
                 buildPackageValue(source, length)
             }
-
         }
     }
 
-
     private fun buildPackageValue(source: ByteArray, length: Int) {
-
         if (packSize - packCursor > length) {
             //新的一帧数据中还是只是之前数据包中的一部分，还没有拼接完一包完整的数据包
             packCursor += length
@@ -69,46 +68,56 @@ open abstract class RecordProtocol : ViewModel(){
         } else if (packSize - packCursor == length) {
             //1.本次通讯中并不是最后一帧，而且其他包最后一帧刚好是接收到一帧数据
             //2.刚好是本次通讯中的最后一帧数据
-
+            packCursor += length
             packageCacheQueue.addData(source, 0, length)
 
-            var cacheLast = ByteArray(packSize)
-            var size = packageCacheQueue.available()
-            packageCacheQueue.read(cacheLast, size - packSize, packSize, 0)
+            var cacheLast = ByteArray(packSize);
+            var size = packageCacheQueue.available();
 
-            LogUtils.e(TAG, "read central Handshake Type : ${HandshakeType.getName(cacheLast[FRAGMENT_OFFSET])}")
-            //
+            packageCacheQueue.read(cacheLast, 0, packSize, size - packSize);
+
+            LogUtils.e(TAG, "------------->> sendMsg Handshake Type: ${HandshakeType.getName(cacheLast[RecordFormat.FRAGMENT_OFFSET])}")
+
+            LogUtils.e(TAG, "${HexStrUtils.byteArrayToHexString(cacheLast)}")
+
             if (cacheLast[0] == ContentType.handshake && lastType.contains(cacheLast[FRAGMENT_OFFSET])) {
                 //最后一帧
                 var buff = packageCacheQueue.availableByteArray()
+                LogUtils.e("----------->tls offerInput :${org.ble.utils.HexStrUtils.byteArrayToHexString(buff)}")
+                packageCacheQueue.clear();
+
                 var msg = TlsServerUtils.offerInput(buff)
                 if (msg != null) {
                     outputAvailable(msg)
                 }
-
-            } else if(cacheLast[0] == ContentType.change_cipher_spec){
-
-                //在接收到该协议后，所有接收到的数据都需要解密。
-                resetState()
-                //onlyInputAvailable()
-            } else {
-                resetState()
             }
-
-        } else {
-            //新的一帧数据中，不仅包含之前的一包数据，而且还包含了下包数据中的部分数据
-            var lastCount = packSize - packCursor
-            packageCacheQueue.addData(source, 0, lastCount)
-
             resetState()
 
-            //剩下的数据（ lastCount～ length ） 新的数据包数据，直接交给下一帧去处理，Length数据位， 拼接到下一帧数据，继续解析
-            cacheHeader = ByteArray(length - lastCount);
-            cacheHeader?.let { System.arraycopy(source, lastCount, it, 0, length - lastCount) };
+        } else {
+            LogUtils.e("TAG","buildPackageValue -------> 03, packCursor:${packCursor}")
+            //新的一帧数据中，不仅包含之前的一包数据，而且还包含了下包数据中的部分数据
+            var lastCount = packSize - packCursor
+            packCursor += lastCount
+            packageCacheQueue.addData(source, 0, lastCount)
+            LogUtils.e(TAG, "------------->> buildPackageValue lastCount: ${lastCount}")
+            if (length - lastCount >= RecordFormat.FRAGMENT_OFFSET) {
+                LogUtils.e("TAG","buildPackageValue -------> 03-1")
+                // 如果剩下数据长度超过了 TLV中L所需的长度就必须需要直接递归处理，
+                // 因为如果最后这个包数据刚好是V为空（TLV中的Value）的数据包package，
+                // 即本次RTT的最后通知类数据包再没有数据传输，不递归则永远不会触发对这包数据处理了，不会触发下一步动作了
+                var lastPack = ByteArray(length - lastCount);
+                System.arraycopy(source, lastCount, lastPack, 0, length - lastCount)
+                resetState()
+                parseMsg(lastPack)
 
+            } else {
+                //剩下的数据（ lastCount～ length ） 新的数据包数据，直接交给下一帧去处理，Length数据位， 拼接到下一帧数据，继续解析
+                cacheHeader = ByteArray(length - lastCount);
+                System.arraycopy(source, lastCount, cacheHeader, 0, length - lastCount)
+                LogUtils.e("TAG","buildPackageValue -------> 03-2 ,lastBytes:${HexStrUtils.byteArrayToHexString(cacheHeader)}")
+                resetState()
+            }
         }
-
-        LogUtils.e(TAG, "buildPackageValue : ${HexStrUtils.byteArrayToHexString(source)}")
     }
 
     private fun resetState() {
@@ -131,7 +140,6 @@ open abstract class RecordProtocol : ViewModel(){
         }
         return value
     }
-
 
     abstract fun outputAvailable(tlsPackage: ByteArray)
 

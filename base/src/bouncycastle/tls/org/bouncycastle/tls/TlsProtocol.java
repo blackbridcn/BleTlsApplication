@@ -262,6 +262,7 @@ public abstract class TlsProtocol
     }
 
     protected void handleChangeCipherSpecMessage() throws IOException {
+        LogUtils.e(TAG,"processChangeCipherSpec -----------> handleChangeCipherSpecMessage");
     }
 
     protected void handleClose(boolean user_canceled)
@@ -502,6 +503,7 @@ public abstract class TlsProtocol
             }
             case ContentType.application_data: {
                 if (!appDataReady) {
+                    LogUtils.e("----------> processRecord ContentType.application_data unexpected_message");
                     throw new TlsFatalAlert(AlertDescription.unexpected_message);
                 }
                 applicationDataQueue.addData(buf, off, len);
@@ -509,11 +511,12 @@ public abstract class TlsProtocol
                 break;
             }
             case ContentType.change_cipher_spec: {
-                LogUtils.e(TAG,"change_cipher_spec");
+                LogUtils.e(TAG,"----------> change_cipher_spec");
                 processChangeCipherSpec(buf, off, len);
                 break;
             }
             case ContentType.handshake: {
+                LogUtils.e(TAG,"----------> handshake");
                 if (handshakeQueue.available() > 0) {
                     handshakeQueue.addData(buf, off, len);
                     processHandshakeQueue(handshakeQueue);
@@ -543,9 +546,10 @@ public abstract class TlsProtocol
             short type = (short) (header >>> 24);
 
 
-            LogUtils.e(TAG, " HandshakeType :" + HandshakeType.getName(type));
+            LogUtils.e(TAG, "processHandshakeQueue HandshakeType :" + HandshakeType.getName(type));
 
             if (!HandshakeType.isRecognized(type)) {
+                LogUtils.e(TAG,"processHandshakeQueue  ----------> unexpected_message");
                 throw new TlsFatalAlert(AlertDescription.unexpected_message,
                         "Handshake message of unrecognized type: " + type);
             }
@@ -658,6 +662,8 @@ public abstract class TlsProtocol
     private void processChangeCipherSpec(byte[] buf, int off, int len)
             throws IOException {
         ProtocolVersion negotiatedVersion = getContext().getServerVersion();
+
+        LogUtils.e(TAG,"processChangeCipherSpec ----------->  ");
         if (null == negotiatedVersion || TlsUtils.isTLSv13(negotiatedVersion)) {
             // See RFC 8446 D.4.
             throw new TlsFatalAlert(AlertDescription.unexpected_message);
@@ -679,7 +685,8 @@ public abstract class TlsProtocol
             recordStream.notifyChangeCipherSpecReceived();
 
             this.receivedChangeCipherSpec = true;
-
+            LogUtils.e(TAG,"processChangeCipherSpec ----------->  receivedChangeCipherSpec true");
+            LogUtils.e(TAG,"processChangeCipherSpec -----------> handleChangeCipherSpecMessage");
             handleChangeCipherSpecMessage();
         }
     }
@@ -797,6 +804,7 @@ public abstract class TlsProtocol
     protected void safeWriteRecord(short type, byte[] buf, int offset, int len)
             throws IOException {
         try {
+            LogUtils.e(TAG,"safeWriteRecord :"+ContentType.getName(type)+" buf :"+HexStrUtils.INSTANCE.byteArrayToHexString(buf));
             recordStream.writeRecord(type, buf, offset, len);
         } catch (TlsFatalAlert e) {
             LogUtils.e(TAG,"safeWriteRecord Type :"+ContentType.getName(type)+" TlsFatalAlert, IOException :"+e.getMessage());
@@ -918,6 +926,9 @@ public abstract class TlsProtocol
         }
 
         short type = TlsUtils.readUint8(buf, off);
+
+        LogUtils.e(TAG,"writeHandshakeMessage ------->Handshake Type:"+HandshakeType.getName(type));
+        LogUtils.e(TAG,"writeHandshakeMessage ------->Handshake buf :"+HexStrUtils.INSTANCE.byteArrayToHexString(buf));
         switch (type) {
             /*
              * These message types aren't included in the transcript.

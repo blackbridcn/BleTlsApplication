@@ -86,14 +86,14 @@ public class TlsServer extends DefaultTlsServer {
     public void notifyHandshakeComplete() throws IOException {
         super.notifyHandshakeComplete();
         handshakeFinished = true;
-        LogUtils.e(TAG, "TlsV2Server notifyHandshakeComplete ----------------> ");
+        LogUtils.e(TAG, "TlsServer notifyHandshakeComplete ----------------> ");
 
     }
 
     @Override
     public void notifyClientCertificate(Certificate certificate) throws IOException {
-        super.notifyClientCertificate(certificate);
-
+       // super.notifyClientCertificate(certificate);
+        LogUtils.e(TAG, "TlsServer notifyClientCertificate ----------------> ");
     }
 
     @Override

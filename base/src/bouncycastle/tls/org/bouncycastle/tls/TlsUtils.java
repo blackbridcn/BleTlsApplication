@@ -4298,6 +4298,8 @@ public class TlsUtils {
 
     static void processClientCertificate(TlsServerContext serverContext, Certificate clientCertificate,
                                          TlsKeyExchange keyExchange, TlsServer server) throws IOException {
+
+        LogUtils.e("TAG","-----------------> processClientCertificate 0");
         SecurityParameters securityParameters = serverContext.getSecurityParametersHandshake();
         if (null != securityParameters.getPeerCertificate()) {
             throw new TlsFatalAlert(AlertDescription.unexpected_message);
@@ -4311,14 +4313,15 @@ public class TlsUtils {
              * NOTE: We tolerate SSLv3 clients sending an empty chain, although "If no suitable
              * certificate is available, the client should send a no_certificate alert instead".
              */
-
+            LogUtils.e("TAG","----------------->processClientCertificate keyExchange.skipClientCredentials");
             keyExchange.skipClientCredentials();
         } else {
+            LogUtils.e("TAG","----------------->processClientCertificate keyExchange.processClientCertificate");
             keyExchange.processClientCertificate(clientCertificate);
         }
 
         securityParameters.peerCertificate = clientCertificate;
-
+        LogUtils.e("TAG","----------------->processClientCertificate keyExchange.processClientCertificate");
         /*
          * RFC 5246 7.4.6. If the client does not send any certificates, the server MAY at its
          * discretion either continue the handshake without client authentication, or respond with a
@@ -4328,6 +4331,7 @@ public class TlsUtils {
          * a fatal alert.
          */
         server.notifyClientCertificate(clientCertificate);
+        LogUtils.e("TAG","-----------------> processClientCertificate 1");
     }
 
     //处理接收到到服务端端证书：就是回调到给开发者 实现类中去 校验
