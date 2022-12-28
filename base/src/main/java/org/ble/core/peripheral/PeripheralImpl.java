@@ -79,10 +79,10 @@ public class PeripheralImpl implements PeripheralCore {
     int index;
 
 
-    public PeripheralImpl(@NotNull  BluetoothManager bluetoothManager, Context mContext) {
+    public PeripheralImpl(@NotNull BluetoothManager bluetoothManager, Context mContext) {
         this.mContext = mContext.getApplicationContext();
         this.bluetoothManager = bluetoothManager;
-        this.bluetoothAdapter=bluetoothManager.getAdapter();
+        this.bluetoothAdapter = bluetoothManager.getAdapter();
         this.mBluetoothLeAdvertiser = this.bluetoothManager.getAdapter().getBluetoothLeAdvertiser();
 
         if (this.bluetoothAdapter != null && bluetoothAdapter.isMultipleAdvertisementSupported()) {
@@ -414,6 +414,11 @@ public class PeripheralImpl implements PeripheralCore {
                 if (clientMsgCount < clientPackage.length) {
                     txCharacteristic.setValue(clientPackage[clientMsgCount]);
                     boolean notify = mBluetoothGattServer.notifyCharacteristicChanged(clientDevice, txCharacteristic, false);
+                } else {
+                    clientMsgCount=0;
+                    if (cache != null) {
+                        sendMsgToGattClient(cache);
+                    }
                 }
             } else {
                 //closeGattServer();
@@ -434,7 +439,7 @@ public class PeripheralImpl implements PeripheralCore {
         //latency：连接延迟
         public void onConnectionUpdated(BluetoothDevice device, int interval, int latency, int timeout,
                                         int status) {
-            Logger.e(TAG,"onConnectionUpdated  interval ");
+            Logger.e(TAG, "onConnectionUpdated  interval ");
         }
 
 
@@ -447,29 +452,36 @@ public class PeripheralImpl implements PeripheralCore {
         sendMsgToGattClient(respMsg);
     }
 
+    byte[] cache;
+
     @Override
     @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     public void sendMsgToGattClient(@NonNull byte[] respMsg) {
-        if (hasConnGattClient()) {
-            clientMsgCount = 0;
-            clientMsgIndex = 0;
-            this.clientPackage = BleBoothHelp.Companion.splitMsgPackage(respMsg, maxMtu);
-            Logger.e(TAG, " sendMsgToGattClient data :\n" +
-                    HexStrUtils.INSTANCE.byteArrayToHexString(respMsg) + " \n" +
-                    clientPackage.length);
+        if (clientMsgCount == 0) {
+            if (hasConnGattClient()) {
+                clientMsgCount = 0;
+                clientMsgIndex = 0;
+                this.clientPackage = BleBoothHelp.Companion.splitMsgPackage(respMsg, maxMtu);
+                Logger.e(TAG, " sendMsgToGattClient data :\n" +
+                        HexStrUtils.INSTANCE.byteArrayToHexString(respMsg) + " \n" +
+                        clientPackage.length);
 
-            if (txCharacteristic == null) {
-                txCharacteristic = new BluetoothGattCharacteristic(
-                        UUID.fromString(txCharUuid),
-                        BluetoothGattCharacteristic.PROPERTY_NOTIFY,
-                        BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ);
+                if (txCharacteristic == null) {
+                    txCharacteristic = new BluetoothGattCharacteristic(
+                            UUID.fromString(txCharUuid),
+                            BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                            BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ);
+                }
+                txCharacteristic.setValue(clientPackage[index]);
+
+                boolean notifyCharacteristicChanged = mBluetoothGattServer.notifyCharacteristicChanged(clientDevice, txCharacteristic, false);
+                Logger.e(TAG, "sendMsgToGattClient \n " +
+                        "---> notifyCharacteristicChanged  : " + notifyCharacteristicChanged);
             }
-            txCharacteristic.setValue(clientPackage[index]);
-
-            boolean notifyCharacteristicChanged = mBluetoothGattServer.notifyCharacteristicChanged(clientDevice, txCharacteristic, false);
-            Logger.e(TAG, "sendMsgToGattClient \n " +
-                    "---> notifyCharacteristicChanged  : " + notifyCharacteristicChanged);
+        } else {
+            cache = respMsg;
         }
+
     }
 
     public boolean hasConnGattClient() {

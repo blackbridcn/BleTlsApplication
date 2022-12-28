@@ -8,8 +8,6 @@ package com.train.peripheral.contetant
  */
 object Constants {
 
-    // 蓝牙信号强度过滤 阈值
-    var BLE_RSSI_THRESHOLD_VALUE = -70
 
     const val BASE_SERVICE_UUID = "fc630001-3445-4b20-8613-c3cbffffffff"
 

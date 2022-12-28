@@ -34,6 +34,7 @@ import java.util.Vector;
  */
 public class TlsServer extends DefaultTlsServer {
 
+
     private static final String TAG = TlsServer.class.getSimpleName();
 
     private static final int[] DEFAULT_CIPHER_SUITES = new int[]
@@ -78,7 +79,7 @@ public class TlsServer extends DefaultTlsServer {
 
     //配置tls Server 支持tls版本
     protected ProtocolVersion[] getSupportedVersions() {
-        // TODO[tls13] Enable TLSv13 by default in due course
+
         return ProtocolVersion.TLSv13.downTo(ProtocolVersion.TLSv12);
     }
 
@@ -87,7 +88,6 @@ public class TlsServer extends DefaultTlsServer {
         super.notifyHandshakeComplete();
         handshakeFinished = true;
         LogUtils.e(TAG, "TlsServer notifyHandshakeComplete ----------------> ");
-
     }
 
     @Override

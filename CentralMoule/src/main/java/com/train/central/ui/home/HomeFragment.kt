@@ -170,15 +170,25 @@ class HomeFragment : Fragment(), AdapterListener {
             mtu: Int
         ) {
             super.onBleServerResp(gatt, characteristic, value, mtu)
-            parseMsg(value, gatt, characteristic)
+            if (complete) {
+                var cValues = TlsClientUtils.offerInput(value);
+                LogUtils.e(
+                    TAG,
+                    "------------->> parseMsg complete: ${
+                        org.e.ble.utils.HexStrUtils.byteArrayToHexString(cValues)
+                    }"
+                )
+            } else {
+                parseMsg(value, gatt, characteristic)
+            }
         }
     }
-
 
 
     //偏移量 ,fragment每条tls命令 除去header头数据后的，数据段长度 length数据位的偏移量
     val FRAGMENT_OFFSET = 5
 
+    //    17 0303 00 1E 0000000000000001036CC611F283FF
     var packHeader = false
 
     private var packageCacheQueue = BytesQueue(0)
@@ -192,15 +202,13 @@ class HomeFragment : Fragment(), AdapterListener {
         HandshakeType.hello_request,
         HandshakeType.client_hello,
         HandshakeType.server_hello_done,
-        HandshakeType.finished
+        HandshakeType.finished,
     )
 
     fun parseMsg(
         msg: ByteArray, gatt: BluetoothGatt,
         characteristic: BluetoothGattCharacteristic,
     ) {
-
-        LogUtils.e(TAG, "------------->> parseMsg : ${org.e.ble.utils.HexStrUtils.byteArrayToHexString(msg)}")
 
         var source = checkCacheHeader(msg)
         var length = source.size
@@ -210,10 +218,14 @@ class HomeFragment : Fragment(), AdapterListener {
                 //source 必须包括完整的 length（表示数据包长度的字节位）数据位，
                 // TLV（Type-Length-Value）中至少要包含完整T（Type）V（Length）数据；
                 if (length > FRAGMENT_OFFSET) {
-                    packSize = TlsUtils.readUint16(source, RecordFormat.LENGTH_OFFSET) + RecordFormat.FRAGMENT_OFFSET
-
-                    LogUtils.e(TAG, "----->> parseMsg Handshake Type : ${HandshakeType.getName(source[RecordFormat.FRAGMENT_OFFSET])}")
-
+                    packSize = TlsUtils.readUint16(
+                        source,
+                        RecordFormat.LENGTH_OFFSET
+                    ) + RecordFormat.FRAGMENT_OFFSET
+                    LogUtils.e(
+                        TAG,
+                        "----->> parseMsg Handshake Type : ${HandshakeType.getName(source[RecordFormat.FRAGMENT_OFFSET])}"
+                    )
                     packHeader = true
                     buildPackageValue(source, length, gatt, characteristic)
                 } else {
@@ -233,6 +245,16 @@ class HomeFragment : Fragment(), AdapterListener {
         source: ByteArray, length: Int, gatt: BluetoothGatt,
         characteristic: BluetoothGattCharacteristic,
     ) {
+        // 14 0303 0001 01
+        // 16 0303 0028 00 00 00 00 00 00 00 00 94
+        LogUtils.e(
+            TAG,
+            "------------->> buildPackageValue packSize:${packSize},packCursor:${packCursor}, source:${
+                org.e.ble.utils.HexStrUtils.byteArrayToHexString(
+                    source
+                )
+            }"
+        )
         if (packSize - packCursor > length) {
             //新的一帧数据中还是只是之前数据包中的一部分，还没有拼接完一包完整的数据包
             packCursor += length
@@ -249,6 +271,8 @@ class HomeFragment : Fragment(), AdapterListener {
 
             packageCacheQueue.read(cacheLast, 0, packSize, size - packSize);
 
+            LogUtils.e("----------->tls offerInput :${ContentType.getName(cacheLast[0])}")
+
             if (cacheLast[0] == ContentType.handshake && lastType.contains(cacheLast[FRAGMENT_OFFSET])) {
                 //最后一帧
                 var buff = packageCacheQueue.availableByteArray();
@@ -256,11 +280,30 @@ class HomeFragment : Fragment(), AdapterListener {
                 packageCacheQueue.clear();
                 var startHakes = TlsClientUtils.offerInput(buff)
                 if (startHakes != null) {
-                    BleClient.getInstance().sendMsgToGattServerDevice(gatt, characteristic, startHakes)
+                    BleClient.getInstance()
+                        .sendMsgToGattServerDevice(gatt, characteristic, startHakes)
                 }
+            } else if (cacheLast[0] == ContentType.application_data) {
+                var buff = packageCacheQueue.availableByteArray();
+                var unWrap = TlsClientUtils.unWrapData(buff)
+                LogUtils.e(
+                    "----------->TlsClientUtils unWrapData :${
+                        HexStrUtils.byteArrayToHexString(
+                            unWrap
+                        )
+                    }"
+                )
 
             }
             initPackageState();
+            // 17 03 03 00 1E
+            // 00 00 00 00 00
+            // 00 00 01 FA 3B
+            // DA 73 5A 40 99
+
+            // D3 51 4C 61 E2
+            // D2 81 9C 0A AB
+            // D3 C7 2E DC DC
 
         } else {
             //新的一帧数据中，不仅包含之前的一包数据，而且还包含了下包数据中的部分数据
@@ -271,14 +314,23 @@ class HomeFragment : Fragment(), AdapterListener {
             initPackageState()
 
             if (length - lastCount >= RecordFormat.FRAGMENT_OFFSET) {
-            // 如果剩下数据长度超过了 TLV中L所需的长度就必须需要直接递归处理，
-            // 因为如果最后这个包数据刚好是V为空（TLV中的Value）的数据包package，
-            // 即本次RTT的最后通知类数据包再没有数据传输，不递归则永远不会触发对这包数据处理了，不会触发下一步动作了
+                // 如果剩下数据长度超过了 TLV中L所需的长度就必须需要直接递归处理，
+                // 因为如果最后这个包数据刚好是V为空（TLV中的Value）的数据包package，
+                // 即本次RTT的最后通知类数据包再没有数据传输，不递归则永远不会触发对这包数据处理了，不会触发下一步动作了
                 var lastPack = ByteArray(length - lastCount);
                 System.arraycopy(source, lastCount, lastPack, 0, length - lastCount)
-                parseMsg(lastPack,gatt,characteristic)
+                parseMsg(lastPack, gatt, characteristic)
 
-            }else {
+
+                /*         packSize = TlsUtils.readUint16(
+                             lastPack,
+                             RecordFormat.LENGTH_OFFSET
+                         ) + RecordFormat.FRAGMENT_OFFSET
+                         LogUtils.e(TAG, "----->> parseMsg Handshake Type : ${HandshakeType.getName(source[RecordFormat.FRAGMENT_OFFSET])}")
+                         packHeader = true
+                         buildPackageValue(lastPack, length, gatt, characteristic)*/
+
+            } else {
                 //剩下的数据（ lastCount～ length ） 新的数据包数据，直接交给下一帧去处理，Length数据位， 拼接到下一帧数据，继续解析
                 cacheHeader = ByteArray(length - lastCount);
                 System.arraycopy(source, lastCount, cacheHeader, 0, length - lastCount)
@@ -306,5 +358,8 @@ class HomeFragment : Fragment(), AdapterListener {
         }
         return value
     }
+
+    var complete = false;
+
 
 }

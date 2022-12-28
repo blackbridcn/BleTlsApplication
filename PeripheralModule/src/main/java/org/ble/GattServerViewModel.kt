@@ -7,20 +7,16 @@ import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseSettings
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.StringRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.train.peripheral.R
+
 import org.ble.callback.BleGattServerCallback
 import org.ble.utils.BleCompat
-import org.bouncycastle.util.encoders.Hex
+
 
 import org.e.ble.utils.HexStrUtils
 import org.tls.peer.server.TlsServerUtils
+
 import org.tls.protocol.RecordProtocol
 import org.utils.LogUtils
-
 
 
 /**
@@ -34,13 +30,6 @@ abstract class GattServerViewModel : RecordProtocol() {
     override val TAG: String = GattServerViewModel::javaClass.name
 
     var handler = Handler(Looper.getMainLooper())
-
-    var _errMsg: MutableLiveData<String> = MutableLiveData<String>()
-    var errMsg: LiveData<String> = _errMsg
-
-    var _errRes: MutableLiveData<Int> = MutableLiveData<Int>()
-    var errRes: LiveData<Int> = _errRes
-
 
     var serviceUuid: String? = null
 
@@ -56,15 +45,6 @@ abstract class GattServerViewModel : RecordProtocol() {
 
     val timeOut: Long = 4 * 1000
 
-
-    private val timeOutRunnable = Runnable {
-        releaseGattServer()
-        if (hasConnCentral) {
-            _errRes.value = R.string.ble_even_build_conn_not_msg_timeout_tip
-        } else {
-            _errRes.value = R.string.ble_even_no_conn_timeout_tip
-        }
-    }
 
     fun startGattServer(
         serviceUuid: String,
@@ -109,27 +89,17 @@ abstract class GattServerViewModel : RecordProtocol() {
             super.onClientBleReq(device, characteristic, value, mtu)
             setCurrentDevice(device)
             //TLS消息
-            //LogUtils.e(TAG, "onClientBleReq : ${HexStrUtils.byteArrayToHexString(value)}")
-
             parseMsg(value)
-           // readBleTlsData(value, device);
-
         }
 
         override fun onDisConnBleDevice(centerDevice: BluetoothDevice) {
             super.onDisConnBleDevice(centerDevice)
             hasConnCentral = false
             if (hasSetupGattServer) {
-                stopTimeOutTask()
-                // releaseGattServer()
-                handler.post {
-                    _errRes.value = R.string.ble_even_exception_tip
-                }
+                //stopTimeOutTask()
             }
         }
     }
-
-
 
 
     fun setCurrentDevice(device: BluetoothDevice) {
@@ -137,26 +107,19 @@ abstract class GattServerViewModel : RecordProtocol() {
     }
 
 
-    fun dispatchBleFailEven(@StringRes fail: Int) {
-        handler.post {
-            _errRes.value = fail
-        }
-        releaseGattServer()
-    }
 
-
-    override fun outputAvailable(tlsPackage: ByteArray){
-        LogUtils.e(TAG,"------> outputAvailable :${org.ble.utils.HexStrUtils.byteArrayToHexString(tlsPackage)}")
-        if(tlsPackage!=null){
+    override fun outputHandshakeAvailable(tlsPackage: ByteArray) {
+        LogUtils.e(
+            TAG,
+            "------> outputAvailable :${org.ble.utils.HexStrUtils.byteArrayToHexString(tlsPackage)}"
+        )
+        if (tlsPackage != null) {
             sendMsgToCentral(tlsPackage);
         }
-
-    }
-
-    abstract fun startFunctionEvent(device: BluetoothDevice)
-
-
-    open fun stopScanTask() {
+        var finsh = TlsServerUtils.handshakeFinished();
+        if (finsh) {
+            onHandshakeComplete()
+        }
 
     }
 
@@ -175,7 +138,7 @@ abstract class GattServerViewModel : RecordProtocol() {
     }
 
 
-    private fun sendMsgToCentral(respVo: ByteArray) {
+    fun sendMsgToCentral(respVo: ByteArray) {
         BleClient.getInstance().sendMsgToGattClient(respVo)
         LogUtils.e(TAG, "-------->> sendMsgToCentral :${HexStrUtils.byteArrayToHexString(respVo)}")
     }
@@ -210,10 +173,10 @@ abstract class GattServerViewModel : RecordProtocol() {
                 " AdvertiseCallback onStartFailure \n errorCode : ${errorCode} \n logErrMsg :${logErrMsg}"
             )
             if (ADVERTISE_FAILED_ALREADY_STARTED != errorCode && hasSetupGattServer) {
-                stopTimeOutTask()
+                //stopTimeOutTask()
                 releaseGattServer()
                 handler.post {
-                    _errMsg.value = logErrMsg //R.string.module_relay_ble_even_exception_tip
+                    //_errMsg.value = logErrMsg //R.string.module_relay_ble_even_exception_tip
                 }
 
             }
@@ -241,14 +204,6 @@ abstract class GattServerViewModel : RecordProtocol() {
         BleClient.getInstance().closeGattServer()
     }
 
-    fun startTimeOutTask() {
-        handler.removeCallbacks(timeOutRunnable)
-        handler.postDelayed(timeOutRunnable, timeOut)
-    }
-
-    fun stopTimeOutTask() {
-        handler.removeCallbacks(timeOutRunnable)
-    }
 
     fun isResetBle() {
         BleClient.getInstance().doResetBleTask()

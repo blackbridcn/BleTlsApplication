@@ -1,20 +1,28 @@
 package com.train.peripheral.ui
 
-import android.bluetooth.BluetoothDevice
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+
 import org.ble.GattServerViewModel
+import org.ble.utils.HexStrUtils
+import org.tls.peer.server.TlsServerUtils
+import org.utils.LogUtils
 
 class HomeViewModel : GattServerViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-    val text: LiveData<String> = _text
-
-
-    override fun startFunctionEvent(device: BluetoothDevice) {
+    override fun onHandshakeComplete() {
 
     }
+
+
+    fun sendMsg(){
+
+        var  hexs="0A0B0C0D0E0F";
+
+        var handshakeClose=TlsServerUtils.wrapData(HexStrUtils.hexToByteArray(hexs))
+
+        LogUtils.e("-------------> onHandshakeComplete:${HexStrUtils.byteArrayToHexString(handshakeClose)}")
+        handler.postDelayed({
+             sendMsgToCentral(handshakeClose);
+        },3000)
+    }
+
 }

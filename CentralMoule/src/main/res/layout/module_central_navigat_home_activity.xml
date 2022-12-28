@@ -7,7 +7,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
         android:orientation="vertical">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -28,8 +27,14 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
+        android:fitsSystemWindows="false"
         tools:openDrawer="start">
+
+        <include
+            android:id="@+id/app_bar_navigate_home"
+            layout="@layout/app_bar_navigate_home"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
@@ -40,11 +45,6 @@
             app:headerLayout="@layout/nav_header_navigat_home"
             app:menu="@menu/module_central_navigat_home_activity_drawer" />
 
-        <include
-            android:id="@+id/app_bar_navigate_home"
-            layout="@layout/app_bar_navigate_home"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
     </androidx.drawerlayout.widget.DrawerLayout>
 
     </LinearLayout>

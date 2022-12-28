@@ -1,18 +1,15 @@
 package org.tls.protocol
 
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCharacteristic
 import androidx.lifecycle.ViewModel
-import org.ble.BleClient
 import org.bouncycastle.tls.RecordFormat
 import org.bouncycastle.tls.TlsUtils
 import org.e.ble.utils.HexStrUtils
-import org.tls.peer.client.TlsClientUtils
+import org.tls.peer.server.TlsServer
 import org.tls.peer.server.TlsServerUtils
 import org.tls.utils.BytesQueue
 import org.utlis.LogUtils
 
-open abstract class RecordProtocol : ViewModel(){
+open abstract class RecordProtocol : ViewModel() {
 
 
     open val TAG: String = RecordProtocol::javaClass.name
@@ -36,6 +33,7 @@ open abstract class RecordProtocol : ViewModel(){
         HandshakeType.finished
     )
 
+    //接收ble 中所有消息
     fun parseMsg(msg: ByteArray) {
         var source = checkCacheHeader(msg)
         var length = source.size
@@ -45,8 +43,11 @@ open abstract class RecordProtocol : ViewModel(){
                 //source 必须包括完整的 length（表示数据包长度的字节位）数据位，
                 // TLV（Type-Length-Value）中至少要包含完整T（Type）V（Length）数据；
                 if (length > FRAGMENT_OFFSET) {
-                    packSize = TlsUtils.readUint16(source, RecordFormat.LENGTH_OFFSET) + RecordFormat.FRAGMENT_OFFSET
-                    LogUtils.e(TAG, "----->> parseMsg Handshake Type : ${HandshakeType.getName(source[RecordFormat.FRAGMENT_OFFSET])}, packSize:${packSize}")
+                    packSize = TlsUtils.readUint16(
+                        source,
+                        RecordFormat.LENGTH_OFFSET
+                    ) + RecordFormat.FRAGMENT_OFFSET
+                    //LogUtils.e(TAG, "----->> parseMsg Handshake Type : ${HandshakeType.getName(source[RecordFormat.FRAGMENT_OFFSET])}, packSize:${packSize}")
                     packHeader = true
                     buildPackageValue(source, length)
                 } else {
@@ -76,10 +77,6 @@ open abstract class RecordProtocol : ViewModel(){
 
             packageCacheQueue.read(cacheLast, 0, packSize, size - packSize);
 
-            LogUtils.e(TAG, "------------->> sendMsg Handshake Type: ${HandshakeType.getName(cacheLast[RecordFormat.FRAGMENT_OFFSET])}")
-
-            LogUtils.e(TAG, "${HexStrUtils.byteArrayToHexString(cacheLast)}")
-
             if (cacheLast[0] == ContentType.handshake && lastType.contains(cacheLast[FRAGMENT_OFFSET])) {
                 //最后一帧
                 var buff = packageCacheQueue.availableByteArray()
@@ -88,20 +85,23 @@ open abstract class RecordProtocol : ViewModel(){
 
                 var msg = TlsServerUtils.offerInput(buff)
                 if (msg != null) {
-                    outputAvailable(msg)
+                    outputHandshakeAvailable(msg)
+
+                } else {
+
                 }
             }
             resetState()
 
         } else {
-            LogUtils.e("TAG","buildPackageValue -------> 03, packCursor:${packCursor}")
+            LogUtils.e("TAG", "buildPackageValue -------> 03, packCursor:${packCursor}")
             //新的一帧数据中，不仅包含之前的一包数据，而且还包含了下包数据中的部分数据
             var lastCount = packSize - packCursor
             packCursor += lastCount
             packageCacheQueue.addData(source, 0, lastCount)
             LogUtils.e(TAG, "------------->> buildPackageValue lastCount: ${lastCount}")
             if (length - lastCount >= RecordFormat.FRAGMENT_OFFSET) {
-                LogUtils.e("TAG","buildPackageValue -------> 03-1")
+                LogUtils.e("TAG", "buildPackageValue -------> 03-1")
                 // 如果剩下数据长度超过了 TLV中L所需的长度就必须需要直接递归处理，
                 // 因为如果最后这个包数据刚好是V为空（TLV中的Value）的数据包package，
                 // 即本次RTT的最后通知类数据包再没有数据传输，不递归则永远不会触发对这包数据处理了，不会触发下一步动作了
@@ -114,7 +114,6 @@ open abstract class RecordProtocol : ViewModel(){
                 //剩下的数据（ lastCount～ length ） 新的数据包数据，直接交给下一帧去处理，Length数据位， 拼接到下一帧数据，继续解析
                 cacheHeader = ByteArray(length - lastCount);
                 System.arraycopy(source, lastCount, cacheHeader, 0, length - lastCount)
-                LogUtils.e("TAG","buildPackageValue -------> 03-2 ,lastBytes:${HexStrUtils.byteArrayToHexString(cacheHeader)}")
                 resetState()
             }
         }
@@ -141,7 +140,8 @@ open abstract class RecordProtocol : ViewModel(){
         return value
     }
 
-    abstract fun outputAvailable(tlsPackage: ByteArray)
+    //tls handshake
+    abstract fun outputHandshakeAvailable(tlsPackage: ByteArray)
 
-
+    abstract fun onHandshakeComplete()
 }

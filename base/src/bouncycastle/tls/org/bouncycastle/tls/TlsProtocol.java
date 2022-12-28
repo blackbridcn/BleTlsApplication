@@ -927,8 +927,6 @@ public abstract class TlsProtocol
 
         short type = TlsUtils.readUint8(buf, off);
 
-        LogUtils.e(TAG,"writeHandshakeMessage ------->Handshake Type:"+HandshakeType.getName(type));
-        LogUtils.e(TAG,"writeHandshakeMessage ------->Handshake buf :"+HexStrUtils.INSTANCE.byteArrayToHexString(buf));
         switch (type) {
             /*
              * These message types aren't included in the transcript.
