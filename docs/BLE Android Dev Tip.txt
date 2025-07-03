@@ -1,0 +1,57 @@
+
+
+(BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE)
+BluetoothAdapter = bluetoothManager.getAdapter();
+
+1.
+startLeScan(final UUID[] serviceUuids, final LeScanCallback callback)
+
+2.BluetoothDevice.connectGatt
+
+
+BluetoothGattCallback -> onConnectionStateChange
+
+3.发现服务
+Thread.sleep(600);
+ // 触发开始搜索服务，触发 onServicesDiscovered  设备连接上 开始扫描服务开始扫描服务，安卓蓝牙开发重要步骤之一
+boolean hasServices = gatt.discoverServices()
+
+
+public void onServicesDiscovered(final BluetoothGatt gatt, final int status){
+4.  //设置通知,实时监听Characteristic变化 这个很重要,如果没有设置Notification就收不到服务端/从机/外围设备返回的数据回调
+        gatt.setCharacteristicNotification(txCharacteristic, true)
+}
+
+5.收到消息
+ public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
+
+6. 数据写入成功 可以继续发没法完数据 ，Callback indicating the result of a characteristic write operation.
+public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
+
+public BluetoothGatt connectGatt(
+            Context context,
+            boolean autoConnect,
+            BluetoothGattCallback callback,
+            int transport,
+            int phy)
+
+当 autoConnect 设置为 false 时，应用会直接尝试连接到远程设备。在这种情况下，连接的优先级更高，但同一时间只能有一个连接尝试。
+如果连接尝试超时（通常30秒后），系统会返回一个错误码（通常是 133 或 GATT_ERROR）。在这种模式下，应用需要自己管理连接的生命周期，包括处理连接失败的情况。
+
+当 autoConnect 设置为 true 时，系统会尝试自动连接到远程设备，并且一旦设备在范围内且可用，系统会自动尝试连接。这
+种模式下的连接管理是由系统控制的，应用不需要手动调用 disconnect 或 close 方法来释放资源。
+系统会在设备断开连接后自动尝试重连，这使得 autoConnect 为 true 的模式在处理连接方面更加省电，且不需要应用频繁地尝试重连。
+
+autoConnect 参数的选择取决于应用的需求。如果应用需要即时、可靠的连接，可能会选择 false。而如果应用可以容忍偶尔的连接中断，并且希望减少电量消耗，可能会选择 true。在实际开发中，可能会根据连接的状态和应用的上下文（如前后台状态）来动态调整 autoConnect 的值。
+
+transport
+指定传输协议，如LE或经典蓝牙。
+    /** No preference of physical transport for GATT connections to remote dual-mode devices */
+ public static final int TRANSPORT_AUTO = 0;
+    /** Constant representing the BR/EDR transport. */
+public static final int TRANSPORT_BREDR = 1;
+    /** Constant representing the Bluetooth Low Energy (BLE) Transport. */
+public static final int TRANSPORT_LE = 2;
+
+phy
+物理层参数，指定BLE的物理层选项，如速度和距离。

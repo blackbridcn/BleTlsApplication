@@ -174,17 +174,7 @@ class HomeFragment : Fragment(), AdapterListener {
             mtu: Int
         ) {
             super.onBleServerResp(gatt, characteristic, value, mtu)
-            if (complete) {
-                var cValues = TlsClientUtils.offerInput(value);
-                LogUtils.e(
-                    TAG,
-                    "------------->> parseMsg complete: ${
-                        org.e.ble.utils.HexStrUtils.byteArrayToHexString(cValues)
-                    }"
-                )
-            } else {
-                parseMsg(value, gatt, characteristic)
-            }
+            parseMsg(value, gatt, characteristic)
         }
     }
 
@@ -249,16 +239,6 @@ class HomeFragment : Fragment(), AdapterListener {
         source: ByteArray, length: Int, gatt: BluetoothGatt,
         characteristic: BluetoothGattCharacteristic,
     ) {
-        // 14 0303 0001 01
-        // 16 0303 0028 00 00 00 00 00 00 00 00 94
-        LogUtils.e(
-            TAG,
-            "------------->> buildPackageValue packSize:${packSize},packCursor:${packCursor}, source:${
-                org.e.ble.utils.HexStrUtils.byteArrayToHexString(
-                    source
-                )
-            }"
-        )
         if (packSize - packCursor > length) {
             //新的一帧数据中还是只是之前数据包中的一部分，还没有拼接完一包完整的数据包
             packCursor += length
@@ -290,6 +270,7 @@ class HomeFragment : Fragment(), AdapterListener {
             } else if (cacheLast[0] == ContentType.application_data) {
                 var buff = packageCacheQueue.availableByteArray();
                 var unWrap = TlsClientUtils.unWrapData(buff)
+
                 LogUtils.e(
                     "----------->TlsClientUtils unWrapData :${
                         HexStrUtils.byteArrayToHexString(
@@ -300,14 +281,6 @@ class HomeFragment : Fragment(), AdapterListener {
 
             }
             initPackageState();
-            // 17 03 03 00 1E
-            // 00 00 00 00 00
-            // 00 00 01 FA 3B
-            // DA 73 5A 40 99
-
-            // D3 51 4C 61 E2
-            // D2 81 9C 0A AB
-            // D3 C7 2E DC DC
 
         } else {
             //新的一帧数据中，不仅包含之前的一包数据，而且还包含了下包数据中的部分数据
@@ -324,15 +297,6 @@ class HomeFragment : Fragment(), AdapterListener {
                 var lastPack = ByteArray(length - lastCount);
                 System.arraycopy(source, lastCount, lastPack, 0, length - lastCount)
                 parseMsg(lastPack, gatt, characteristic)
-
-
-                /*         packSize = TlsUtils.readUint16(
-                             lastPack,
-                             RecordFormat.LENGTH_OFFSET
-                         ) + RecordFormat.FRAGMENT_OFFSET
-                         LogUtils.e(TAG, "----->> parseMsg Handshake Type : ${HandshakeType.getName(source[RecordFormat.FRAGMENT_OFFSET])}")
-                         packHeader = true
-                         buildPackageValue(lastPack, length, gatt, characteristic)*/
 
             } else {
                 //剩下的数据（ lastCount～ length ） 新的数据包数据，直接交给下一帧去处理，Length数据位， 拼接到下一帧数据，继续解析

@@ -2,46 +2,32 @@
 pluginManagement {
     repositories {
 
-        maven { url "https://jitpack.io" }
-        //google  https://maven.google.com/
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        //gradle-plugin    https://plugins.gradle.org/m2/
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        //public  central仓 和 jcenter仓 的聚合仓
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        //maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
+        maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://maven.aliyun.com/repository/jcenter")}
+        maven { url = uri("https://repo1.maven.org/maven2/") }
 
-        maven { url 'https://repo1.maven.org/maven2/' }
 
-        maven { url 'https://maven.fabric.io/public' }
-
-        maven { url "https://oss.jfrog.org/libs-snapshot" }
-
-        gradlePluginPortal()
-        google()
         mavenCentral()
+        google()
+        gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven { url "https://jitpack.io" }
-        //google  https://maven.google.com/
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        //gradle-plugin    https://plugins.gradle.org/m2/
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        //public  central仓 和 jcenter仓 的聚合仓
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        //maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
 
-        maven { url 'https://repo1.maven.org/maven2/' }
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
+        maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://maven.aliyun.com/repository/jcenter")}
+        maven { url = uri("https://repo1.maven.org/maven2/") }
 
-        maven { url 'https://maven.fabric.io/public' }
-
-        maven { url "https://oss.jfrog.org/libs-snapshot" }
-
-        google()
         mavenCentral()
+        google()
     }
 }
 rootProject.name = "TestApplication"

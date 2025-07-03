@@ -36,12 +36,10 @@ public class TlsClientUtils {
 
     static {
         //握手随机数
-
         //var rngProvider = new System.Security.Cryptography.RNGCryptoServiceProvider();
         //rngProvider.GetBytes(random);
         //SHA256PRNG 表示 采用SHA256算法 + PRNG生成伪随机数
         //SecureRandom secureRandom = SecureRandom.getInstance("SHA256PRNG");
-
         try {
             Security.addProvider(new BouncyCastleProvider());
             // TlsClientProtocol 进行tls client 端handshake 协议组装 封装类
@@ -116,46 +114,10 @@ public class TlsClientUtils {
     }
 
 
-    public static byte[] continueHandshake(byte[] serverHello) {
-        boolean handshakeFinished = false;
-        byte[] data = null;
-        try {
-            tlsClientProtocol.offerInput(serverHello);
-
-            int dataAvailable = tlsClientProtocol.getAvailableOutputBytes();
-
-            if (dataAvailable != 0) {
-                data = new byte[dataAvailable];
-                tlsClientProtocol.readOutput(data, 0, dataAvailable);
-            }
-            handshakeFinished = tlsV2Client.handshakeFinished;
-            LogUtils.e(TAG, "-----------------> handshakeFinished :" + handshakeFinished);
-            if (data != null) {
-                return data;
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            LogUtils.e(TAG, "Exception :" + e.getMessage());
-        }
-        return null;
-
-    }
-
-    public static void onlyInput(byte[] input) {
-        try {
-            tlsClientProtocol.offerInput(input);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static byte[] offerInput(byte[] input) {
-
         byte[] data = null;
         try {
             tlsClientProtocol.offerInput(input);
-            LogUtils.e(TAG, "-----------------> handshakeFinished :" + tlsV2Client.handshakeFinished);
             int dataAvailable = tlsClientProtocol.getAvailableOutputBytes();
             if (dataAvailable != 0) {
                 data = new byte[dataAvailable];
@@ -172,10 +134,6 @@ public class TlsClientUtils {
         return null;
     }
 
-
-    public static void getAuth() {
-
-    }
 
 
     public static boolean handshakeFinished() {
@@ -185,7 +143,6 @@ public class TlsClientUtils {
     public static byte[] wrapData(byte[] input) {
         try {
             tlsClientProtocol.writeApplicationData(input, 0, input.length);
-            // tlsClientProtocol.offerOutput(input, 0, input.length);
             int dataAvailable = tlsClientProtocol.getAvailableOutputBytes();
             byte[] wrappedData = new byte[dataAvailable];
             tlsClientProtocol.readOutput(wrappedData, 0, wrappedData.length);
@@ -200,14 +157,12 @@ public class TlsClientUtils {
     public static byte[] unWrapData(byte[] input) {
         try {
             tlsClientProtocol.offerInput(input, 0, input.length);
-            //                                    applicationDataAvailable
             int dataAvailable = tlsClientProtocol.applicationDataAvailable();
             if (dataAvailable != 0) {
                 byte[] unwrappedData = new byte[dataAvailable];
                 tlsClientProtocol.readApplicationData(unwrappedData, 0, unwrappedData.length);
                 return unwrappedData;
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
